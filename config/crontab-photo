@@ -18,10 +18,10 @@
 # m h  dom mon dow   command
 
 
-*/5    04-21 * * * /home/pi/rp-shot/ts.sh     > /dev/null 2>&1
-2,32   04-21 * * * /home/pi/rp-shot/sync.sh   > /dev/null 2>&1
+*/5    04-23 * * * /home/pi/rp-shot/ts.sh     > /dev/null 2>&1
+2,32   04-23 * * * /home/pi/rp-shot/sync.sh   > /dev/null 2>&1
 22     04-20 * * * /home/pi/rp-shot/purge.sh  > /dev/null 2>&1
 
-12     04-20 * * * /home/pi/Projects/rp-iot/p04-twitter/launcher-rp2.sh > /dev/null 2>&1
+12     04-23 * * * /home/pi/Projects/rp-iot/p04-twitter/launcher-rp2.sh > /dev/null 2>&1
 
 
