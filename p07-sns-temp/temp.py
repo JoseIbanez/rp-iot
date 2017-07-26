@@ -1,4 +1,5 @@
-#!/usr/bin/python2.7
+#!/usr/bin/env python
+
 
 import logging
 import json
@@ -36,7 +37,9 @@ def load_config(configPath):
     probeType=config['type']
     probePath=config['path']
 
-    arn="arn:aws:sns:eu-west-1:532272748741:Teste"
+    #arn="arn:aws:sns:eu-west-1:532272748741:Teste"
+    arn="arn:aws:sns:eu-west-1:532272748741:temp"
+
    
     logger.info('Set arn:'+arn);
     logger.info('Set probeId:'+probeId)
@@ -75,14 +78,18 @@ def set_message(temp,humidity):
 
 
 def upload(message):
-    client = boto3.client('sns')
-    response = client.publish(
-        TargetArn=arn,
-        Message=json.dumps({'default': json.dumps(message)}),
-        MessageStructure='json'
-    )
 
-    logger.info("AWS answer"+str(response))
+
+    try:
+        client = boto3.client('sns')
+        response = client.publish(
+            TargetArn=arn,
+            Message=json.dumps({'default': json.dumps(message)}),
+            MessageStructure='json'
+        )
+        logger.info("AWS answer"+str(response))
+    except:
+        logger.error("AWS SNS failed")
 
 
 
