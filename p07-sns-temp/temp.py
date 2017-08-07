@@ -50,12 +50,32 @@ def read_ds18b20(path):
         data = myfile.read()
 
     temp = None
-    m = re.search('t=(\d+)',data)
+    m = re.search(r't=(\d+)', data)
     if m:
         logger.info('Temp:'+m.group(0))
         temp = int(m.group(1))
 
     return temp
+
+def read_oregon(path):
+    with open(path, "r") as myfile:
+        data = myfile.read()
+
+    temp = None
+    m = re.search(r'Temp: (\d+)', data)
+    if m:
+        logger.info('Temp:'+m.group(0))
+        temp = int(m.group(1))
+
+    humidity = None
+    m = re.search(r'Humidity: (\d+)', data)
+    if m:
+        logger.info('Humidity:'+m.group(0))
+        humidity = int(m.group(1))
+
+    return temp, humidity
+
+
 
 def read_linuxTemp(path):
     return 37000
@@ -71,7 +91,7 @@ def set_message(temp,humidity):
               }
 
     if humidity:
-        print "hola"
+        message['humidity'] = humidity
 
     logger.info("Message:"+json.dumps(message))
     return message
@@ -114,6 +134,10 @@ def main():
 
     if probeType == "DS18B20":
         temp = read_ds18b20(probePath)
+
+    if probeType == "OS":
+        temp, humidity = read_oregon(probePath)
+
 
     message=set_message(temp,humidity)
 
