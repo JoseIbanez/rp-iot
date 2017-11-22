@@ -62,7 +62,7 @@ def read_oregon(path):
         data = myfile.read()
 
     temp = None
-    m = re.search(r'Temp: (\d+)', data)
+    m = re.search(r'Temp: ([+-]?\d+)', data)
     if m:
         logger.info('Temp:'+m.group(0))
         temp = int(m.group(1))
