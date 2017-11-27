@@ -2,6 +2,9 @@
 
 
 import logging
+import logging.handlers
+from sys import platform
+
 import json
 import boto3
 import datetime
@@ -15,9 +18,17 @@ probeId = ""
 probeType = ""
 probePath = ""
 
-logging.basicConfig()
+#logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+if platform == "linux" or platform == "linux2":
+    handler = logging.handlers.SysLogHandler(address="/dev/log")
+elif platform == "darwin":
+    handler = logging.handlers.SysLogHandler(address="/var/run/syslog")
+logger.addHandler(handler)
+#logger.debug('this is debug')
+#logger.critical('this is critical')
 
 
 def load_config(configPath):
