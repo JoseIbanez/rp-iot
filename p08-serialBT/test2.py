@@ -2,6 +2,26 @@ import time
 import serial
 import logging
 import logging.handlers
+import argparse
+
+
+#Get options
+parser = argparse.ArgumentParser(
+         description='Send message to serial port')
+ 
+parser.add_argument(
+        '-port',
+        type=str,
+        help='serial port, eg. /dev/rfcomm0',
+        default="/dev/rfcomm0")
+
+parser.add_argument(
+        '-msg',
+        type=str,
+        help='message to send, eg. 10;1010',
+        default="10;1010")
+
+args = parser.parse_args()
 
 
 #syslog config
@@ -16,7 +36,7 @@ logger.addHandler(handler)
 
 # configure the serial connections
 ser = serial.Serial(
-    port='/dev/rfcomm1',
+    port=args.port,
     baudrate=9600,
     timeout=5)
 
@@ -40,7 +60,7 @@ else:
 
 
 #Main command
-ser.write("10;1100")
+ser.write(args.msg)
 ans = ser.readline()
 print ans
 logger.info("BT answer:"+ans)
