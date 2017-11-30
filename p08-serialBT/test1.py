@@ -1,7 +1,7 @@
 import time
 import serial
 
-# configure the serial connections (the parameters differs on the device you are connecting to)
+# configure the serial connections
 ser = serial.Serial(
     port='/dev/rfcomm1',
     baudrate=9600,
@@ -12,8 +12,10 @@ if ser.isOpen():
 else:
     print "isOpen: False"
 
-print ser.portstr       # check which port was really used
+# check which port was really used
+print ser.portstr
 
+#Just for test
 ser.write("0;0000")
 ans = ser.readline()
 if ans == "0000":
@@ -22,10 +24,11 @@ else:
    print "Test port: Failed"
 
 
-ser.write("10;1100")      # write a string
+#Main command
+ser.write("10;1100")
 ans = ser.readline()
-
-
 print ans
+
+
 ser.close()
 
