@@ -41,7 +41,7 @@ while True:
     ser = serial.Serial(
         port=args.port,
         baudrate=9600,
-        timeout=0.1)
+        timeout=0.5)
 
     time.sleep(5)
     serStatus=ser.isOpen()
@@ -66,7 +66,7 @@ while True:
 
     count = count - 1
     if count <= 0:
-        logger.fatal("Execution aborted")
+        logger.fatal("Execution aborted. Port "+args.port)
         sys.exit(-1)
 
     ser.close()
@@ -94,9 +94,9 @@ while True:
 
     count = count - 1
     if count <= 0:
-        logger.fatal("Missing answer")
-        break               
+        logger.fatal("Missing answer. Port "+args.port)
+        break
 
     time.sleep(.1)
-   
+
 ser.close()
