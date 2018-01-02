@@ -63,6 +63,7 @@ while True:
     
     print "Test port: Failed"
     logger.critical("Test port: Failed")
+
     count = count - 1
     if count <= 0:
         logger.fatal("Execution aborted")

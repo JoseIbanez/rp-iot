@@ -49,11 +49,13 @@ void loop() {
   // Get a command
   if (Serial.available()) {
     inputParse(Serial.readString());
+    Serial.println(String(curTime) + ";" + relayStatus);
     updateGPIO(relayStatus);
   }
 
   if (bleSerial.available()) {
     inputParse(bleSerial.readString());
+    bleSerial.print(String(curTime) + ";" + relayStatus);
     updateGPIO(relayStatus);
   }
 
@@ -64,8 +66,10 @@ void loop() {
     if (! curTime > 0) {
       relayStatus = "0000";
       updateGPIO(relayStatus);
-    }    
+    }
+    #ifdef DEBUG    
     Serial.println(String(curTime) + ";" + relayStatus);
+    #endif
   }
 
 
@@ -78,23 +82,38 @@ int inputParse(String input) {
   char* ptr;
   char buf[sizeof(sample)];
 
+  #ifdef DEBUG
   Serial.println(input);
+  #endif
+
+  //Asking for status
+  if ((input == "STATUS") || (input == "S")) {
+    return 0;
+  }
+  
+
+  
   input.toCharArray(buf, sizeof(buf));
 
   // Get TimeOut
   ptr = strtok(buf, delimiter);
   if (ptr != NULL) {
     curTime = String(ptr).toInt();
-    Serial.println("Uptime: " + String(curTime));
+    //Serial.println("Uptime: " + String(curTime));
   }
 
   // Get Gpio Status
   ptr = strtok (NULL, delimiter);
   if (ptr != NULL) {
     relayStatus = String(ptr);
-    Serial.println("Relay status: " + relayStatus);
+    //Serial.println("Relay status: " + relayStatus);
   }
 
+  // Sanity
+  if (curTime <= 0) {
+    curTime = 0;
+    relayStatus = "0000";
+  }
 
 
 }
@@ -103,9 +122,10 @@ int inputParse(String input) {
 int updateGPIO(String status) {
 
 
-
+  #ifdef DEBUG  
   bleSerial.print(status);
   Serial.println(status);
+  #endif
 
   //if (relayStatus.length() != 4) {
   //  return(-1);
