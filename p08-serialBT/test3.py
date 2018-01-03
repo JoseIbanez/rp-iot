@@ -10,7 +10,7 @@ import sys
 #Get options
 parser = argparse.ArgumentParser(
          description='Send message to serial port')
- 
+
 parser.add_argument(
         '-port',
         type=str,
@@ -23,6 +23,12 @@ parser.add_argument(
         help='message to send, eg. 10;1010',
         default="10;1010")
 
+parser.add_argument(
+        '-wait',
+        action='store_true',
+        help='wait for 0')
+
+
 args = parser.parse_args()
 
 
@@ -34,6 +40,8 @@ handler = logging.handlers.SysLogHandler(address="/dev/log")
 #handler.ident = 'SerialTester'
 handler.formatter = logging.Formatter(fmt="SerialTester[] %(levelname)s: %(message)s")
 logger.addHandler(handler)
+
+logger.info("port: "+str(args.port)+" Testing")
 
 count=3
 while True:
@@ -48,25 +56,21 @@ while True:
     logger.info("ser.isOpen "+str(serStatus))
     print "isOpen: "+str(serStatus)
 
-    # check which port was really used
-    logger.info("port "+str(ser.portstr))
-    print ser.portstr
-
     #Just for test
-    ser.write("0;0000")
-    time.sleep(5)
+    ser.write("STATUS")
+    time.sleep(2)
     ans = ser.readline()
-    if ans == "0000":
+    if len(ans) > 0:
         print "Test port: OK"
-        logger.info("Test port: OK")
+        logger.info("port: "+str(ser.portstr)+" Test OK, STATUS:"+ans)
         break
-    
+
     print "Test port: Failed"
-    logger.critical("Test port: Failed")
+    logger.critical("port: "+str(ser.portstr)+" Test Failed")
 
     count = count - 1
     if count <= 0:
-        logger.fatal("Execution aborted. Port "+args.port)
+        logger.fatal("port: "+str(ser.portstr)+" Execution aborted.")
         sys.exit(-1)
 
     ser.close()
@@ -74,29 +78,37 @@ while True:
 
 
 #Send main command
-logger.info("Sending cmd: "+args.msg)
+logger.info("port: "+str(ser.portstr)+" Sending cmd: "+args.msg)
 ser.write(args.msg)
 
 count = 100
 while True:
 
     #Wait for answer
+    time.sleep(2)
     ans = ser.readline()
     print ans
 
     if len(ans)>0:
-        logger.info("BT answer: "+ans)
+        logger.info("port: "+str(ser.portstr)+" Status: "+ans)
+
+    #No wait
+    if not args.wait:
+	break
 
     #Wait for final status
-    if ans == "0000":
-        logger.info("Received confirmation")
+    if ans == "0;0000":
+        logger.info("port: "+str(ser.portstr)+" Clear confirmed")
         break
+
 
     count = count - 1
     if count <= 0:
-        logger.fatal("Missing answer. Port "+args.port)
+        logger.fatal("port: "+str(ser.portstr)+" Timeout for clear, Status "+args.port)
         break
 
-    time.sleep(.1)
+    time.sleep(2)
+    ser.write("STATUS")
+
 
 ser.close()
