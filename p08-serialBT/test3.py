@@ -49,7 +49,7 @@ while True:
     ser = serial.Serial(
         port=args.port,
         baudrate=9600,
-        timeout=0.5)
+        timeout=1)
 
     time.sleep(5)
     serStatus=ser.isOpen()
@@ -85,7 +85,7 @@ count = 100
 while True:
 
     #Wait for answer
-    time.sleep(2)
+    time.sleep(5)
     ans = ser.readline()
     print ans
 
