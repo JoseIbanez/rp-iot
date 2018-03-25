@@ -49,7 +49,7 @@ while True:
     ser = serial.Serial(
         port=args.port,
         baudrate=9600,
-        timeout=1)
+        timeout=1.5)
 
     time.sleep(5)
     serStatus=ser.isOpen()
@@ -58,7 +58,7 @@ while True:
 
     #Just for test
     ser.write("STATUS")
-    time.sleep(2)
+    time.sleep(3)
 
     try:
     	ans = ser.readline()
@@ -71,6 +71,7 @@ while True:
         print "Test port: OK"
         logger.info("port: "+str(ser.portstr)+" Test OK, STATUS:"+ans)
         break
+
 
     print "Test port: Failed"
     logger.critical("port: "+str(ser.portstr)+" Test Failed")
