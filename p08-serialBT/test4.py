@@ -63,9 +63,9 @@ while True:
     try:
     	ans = ser.readline()
     except:
-	logger.critical("port: "+str(ser.portstr)+"Exception caughted, in ser.readline")
+        logger.critical("port: "+str(ser.portstr)+"Exception caughted, in ser.readline")
         print "Exception caughted"
-	ans = ""
+        ans = ""
 
     if len(ans) > 0:
         print "Test port: OK"

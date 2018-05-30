@@ -10,6 +10,8 @@ import thread
 import os
 import time
 
+cmdList = []
+
 def on_new_client(clientsocket,addr):
     while True:
         try:
@@ -17,8 +19,11 @@ def on_new_client(clientsocket,addr):
         except:
             break
 
+        if len(msg) > 0:
+            cmdList.append(msg)
+
         #do some checks and if msg == someWeirdSignal: break:
-        print addr, ' >> ', msg
+        print addr, ' Rec ', msg
         msg = "bye" 
         time.sleep(1)
 
@@ -29,6 +34,31 @@ def on_new_client(clientsocket,addr):
             break
 
     clientsocket.close()
+
+
+
+def serialServer():
+    while True:
+
+        print ">> TEST"
+        time.sleep(1)
+        print "<< ANS"
+        time.sleep(1)
+
+        if len(cmdList) > 0:
+            cmd = cmdList.pop(0)
+            print ">>"+cmd
+            time.sleep(1)
+            print "<<ANS"
+            time.sleep(1)
+
+
+
+
+
+
+
+
 
 #s = socket.socket()         # Create a socket object
 #host = socket.gethostname() # Get local machine name
@@ -46,6 +76,9 @@ except OSError:
 
 
 print 'Server started!'
+thread.start_new_thread(serialServer,())
+
+
 print 'Waiting for clients...'
 
 s.bind("/tmp/channel1")
