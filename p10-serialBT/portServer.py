@@ -13,6 +13,8 @@ import serial
 
 
 cmdList = []
+serStatus = 0
+
 
 def on_new_client(clientsocket,addr):
     while True:
@@ -26,7 +28,7 @@ def on_new_client(clientsocket,addr):
 
         #do some checks and if msg == someWeirdSignal: break:
         print addr, ' Rec ', msg
-        msg = "bye"
+        msg = "serStatus: "+serStatus
         time.sleep(1)
 
         #Maybe some code to compute the last digit of PI, play game or anything else can go here and when you are done.
@@ -41,7 +43,6 @@ def on_new_client(clientsocket,addr):
 
 def serialServer():
 
-    serStatus = 0
     lastAnswer = 10
     lastCmd = 0
     timeToSleep = 30
@@ -124,7 +125,7 @@ s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 #s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) 
 
 try:
-    os.remove("/tmp/channel1")
+    os.remove("/tmp/channel0")
 except OSError:
     pass
 
