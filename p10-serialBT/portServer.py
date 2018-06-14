@@ -9,13 +9,15 @@ import socket               # Import socket module
 import thread
 import os
 import time
+import serial
+
 
 cmdList = []
 
 def on_new_client(clientsocket,addr):
     while True:
         try:
-            msg = clientsocket.recv(1024) 
+            msg = clientsocket.recv(1024)
         except:
             break
 
@@ -24,7 +26,7 @@ def on_new_client(clientsocket,addr):
 
         #do some checks and if msg == someWeirdSignal: break:
         print addr, ' Rec ', msg
-        msg = "bye" 
+        msg = "bye"
         time.sleep(1)
 
         #Maybe some code to compute the last digit of PI, play game or anything else can go here and when you are done.
@@ -38,23 +40,76 @@ def on_new_client(clientsocket,addr):
 
 
 def serialServer():
+
+    serStatus = 0
+    lastAnswer = 10
+    lastCmd = 0
+    timeToSleep = 30
+
     while True:
 
-        print ">> TEST"
+	if lastCmd > timeToSleep and len(cmdList) == 0:
+            print "z"
+	    time.sleep(2)
+	    continue
+ 	elif lastCmd > timeToSleep and len(cmdList) > 0:
+	    print "Wakeup"
+            lastCmd = 0
+
+
+        if serStatus == 0:
+
+            ser = serial.Serial(
+                port="/dev/rfcomm0",
+                baudrate=9600,
+                timeout=1.5)
+
+            time.sleep(5)
+            print "isOpen: "+str(ser.isOpen())
+            serStatus = 1
+
+        try:
+            ans = ser.readline()
+        except:
+            ans = ""
+
+        if len(ans)>0:
+            print "<<"+ans
+            lastAnswer = 0
+
         time.sleep(1)
-        print "<< ANS"
-        time.sleep(1)
+        lastAnswer = lastAnswer + 1
+        lastCmd  = lastCmd + 1
+        print "."
+
+	if lastAnswer > 20:
+	    serStatus = 0
+            ser.close()
+            print "Reset"
+            time.sleep(5)
+            continue
+
+
+        if lastCmd > timeToSleep:
+            serStatus = 0
+            ser.close()
+            print "To sleep"
+            time.sleep(5)
+            continue
+
+
+        if lastAnswer > 10:
+            #Just for test
+	    print ">>STATUS"
+            ser.write("STATUS")
+            continue
+
 
         if len(cmdList) > 0:
+            lastCmd = 0
             cmd = cmdList.pop(0)
             print ">>"+cmd
-            time.sleep(1)
-            print "<<ANS"
-            time.sleep(1)
-
-
-
-
+            ser.write(cmd)
 
 
 
@@ -93,3 +148,4 @@ while True:
     #Edit: (c,addr)
     #that's how you pass arguments to functions when creating new threads using thread module.
 s.close()
+
