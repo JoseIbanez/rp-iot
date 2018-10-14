@@ -1,8 +1,3 @@
-
-
-####
-
-
 #!/usr/bin/python           # This is server.py file
 
 import socket               # Import socket module
@@ -28,7 +23,7 @@ def on_new_client(clientsocket,addr):
 
         #do some checks and if msg == someWeirdSignal: break:
         print addr, ' Rec ', msg
-        msg = "serStatus: "+serStatus
+        msg = "serStatus: "+str(serStatus)
         time.sleep(1)
 
         #Maybe some code to compute the last digit of PI, play game or anything else can go here and when you are done.
@@ -46,6 +41,7 @@ def serialServer():
     lastAnswer = 10
     lastCmd = 0
     timeToSleep = 30
+    serStatus = 0
 
     while True:
 
@@ -77,6 +73,7 @@ def serialServer():
         if len(ans)>0:
             print "<<"+ans
             lastAnswer = 0
+            serStatus = 2
 
         time.sleep(1)
         lastAnswer = lastAnswer + 1
@@ -85,6 +82,7 @@ def serialServer():
 
 	if lastAnswer > 20:
 	    serStatus = 0
+            lastAnswer = 0
             ser.close()
             print "Reset"
             time.sleep(5)
@@ -101,12 +99,16 @@ def serialServer():
 
         if lastAnswer > 10:
             #Just for test
+            serStatus = 1
 	    print ">>STATUS"
-            ser.write("STATUS")
+	    try:
+            	ser.write("STATUS")
+	    except:
+		pass
             continue
 
 
-        if len(cmdList) > 0:
+        if len(cmdList) > 0 and serStatus == 2:
             lastCmd = 0
             cmd = cmdList.pop(0)
             print ">>"+cmd
@@ -137,7 +139,7 @@ thread.start_new_thread(serialServer,())
 
 print 'Waiting for clients...'
 
-s.bind("/tmp/channel1")
+s.bind("/tmp/channel0")
 #s.bind((host, port))        # Bind to the port
 s.listen(5)                 # Now wait for client connection.
 
