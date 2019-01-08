@@ -22,9 +22,9 @@ def on_new_client(clientsocket,addr):
         if len(msg) > 0:
             cmdList.append(msg)
 
-        print addr, ' Rec ', msg
+        print 'Addr:', addr, ' Rec: ', msg
         msg = "serStatus: "+str(serStatus)
-        time.sleep(1)
+        #time.sleep(1)
 
         try:
             clientsocket.send(msg)
@@ -44,26 +44,29 @@ def serialServer():
 
     while True:
 
+        #Message timeout
         if lastCmd > timeToSleep and len(cmdList) == 0:
-            print "z"
+            #print "z"
             time.sleep(2)
             continue
+
         elif lastCmd > timeToSleep and len(cmdList) > 0:
-            print "Wakeup"
+            print "New command. Wakeup"
             lastCmd = 0
 
 
+        #Port was closed
         if serStatus == 0:
-
             ser = serial.Serial(
-                port="/dev/rfcomm0",
-                baudrate=9600,
-                timeout=1.5)
-
-            time.sleep(5)
-            print "isOpen: "+str(ser.isOpen())
+                            port="/dev/rfcomm0",
+                            baudrate=9600,
+                            timeout=1.5)
+            time.sleep(1)
+            print "Port isOpen: "+str(ser.isOpen())
+            # Now port is opened but inactive
             serStatus = 1
 
+        #Try to read a message
         try:
             ans = ser.readline()
         except:
@@ -77,27 +80,28 @@ def serialServer():
         time.sleep(1)
         lastAnswer = lastAnswer + 1
         lastCmd  = lastCmd + 1
-        print "."
+        #print "."
 
+
+        # Much time without answers
         if lastAnswer > 20:
             serStatus = 0
             lastAnswer = 0
             ser.close()
-            print "Reset"
+            print "Reset port"
             time.sleep(5)
             continue
 
-
+        # Time to spleep
         if lastCmd > timeToSleep:
             serStatus = 0
             ser.close()
-            print "To sleep"
+            print "No commands, to sleep"
             time.sleep(5)
             continue
 
-
+        #Check connection status
         if lastAnswer > 10:
-            #Check connection status
             serStatus = 1
             print ">>STATUS"
             try:
@@ -106,7 +110,7 @@ def serialServer():
                 pass
             continue
 
-
+        # If ok and there is any command, send it
         if len(cmdList) > 0 and serStatus == 2:
             lastCmd = 0
             cmd = cmdList.pop(0)
@@ -115,6 +119,7 @@ def serialServer():
 
 
 
+#######################################
 
 s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
@@ -123,14 +128,11 @@ try:
 except OSError:
     pass
 
-
-
 print 'Server started!'
 thread.start_new_thread(serialServer,())
 
 
 print 'Waiting for clients...'
-
 s.bind("/tmp/channel0")
 s.listen(5)                 # Now wait for client connection.
 

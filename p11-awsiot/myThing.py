@@ -29,8 +29,6 @@ import subprocess
 
 # Custom Shadow callback
 def customShadowCallback_Delta(payload, responseStatus, token):
-    # payload is a JSON string ready to be parsed using json.loads(...)
-    # in both Py2.x and Py3.x
     print("++++++++DELTA++++++++++")
     print("Payload: "+ str(payload))
     print("responseStatus: "+str(responseStatus))
@@ -50,15 +48,49 @@ def customShadowCallback_Delta(payload, responseStatus, token):
     if not ansState:
         return
 
+    #Report ok
     try:
         JSONPayload = {"state":{"reported": state }}
         print("Reporting: "+str(JSONPayload))
         deviceShadowHandler.shadowUpdate(json.dumps(JSONPayload), None, 5)
-        #time.sleep(5)
-        #JSONPayload = {"state":{"reported":{"property": 0 }}}
-        #deviceShadowHandler.shadowUpdate(json.dumps(JSONPayload), None, 5)
     except:
         print("report error")
+
+
+
+    #Auto-off
+    offState = autoOff(state)
+    if len(offState) > 0:
+        time.sleep(10)
+        JSONPayload = {"state":{"desired": offState }}
+        print("Auto-off: "+str(JSONPayload))
+        deviceShadowHandler.shadowUpdate(json.dumps(JSONPayload), None, 5)
+        time.sleep(1)
+        JSONPayload = {"state":{"reported": offState }}
+        deviceShadowHandler.shadowUpdate(json.dumps(JSONPayload), None, 5)
+
+
+
+def autoOff(reqState):
+
+    retState = {}
+
+    for key in reqState:
+
+        action = config['actions'].get(key)
+        if not action:
+           return retState
+
+        autoOff = action.get('autoOff')
+        if not autoOff:
+           return retState
+
+        if reqState[key] == "on" and autoOff:
+            retState[key] = "off"
+
+    print("Auto-off length: "+str(len(retState)))
+    return retState
+
 
 
 def controlerMapping(reqState):
