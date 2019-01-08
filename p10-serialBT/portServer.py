@@ -1,7 +1,6 @@
 #!/usr/bin/python           # This is server.py file
 
 import socket               # Import socket module
-#import thread
 import os
 import time
 import serial
@@ -30,7 +29,7 @@ def on_new_client(clientsocket,addr):
                 cmdList.append(msg)
                 cv.notify()
 
-        print 'Addr:', addr, ' Rec: ', msg
+        logging.debug('Addr:'+addr + ' Rec: ' + msg)
         msg = "serStatus: "+str(serStatus)
         #time.sleep(1)
 
@@ -89,7 +88,7 @@ def serialServer():
             ans = ""
 
         if len(ans)>0:
-            print "<<"+ans
+            logging.debug("<<"+ans)
             lastAnswer = 0
             serStatus = 2
 
@@ -104,7 +103,7 @@ def serialServer():
             serStatus = 0
             lastAnswer = 0
             ser.close()
-            print "Reset port"
+            logging.debug("Reset port")
             time.sleep(5)
             continue
 
