@@ -24,7 +24,7 @@ def on_new_client(clientsocket,addr):
 
         print 'Addr:', addr, ' Rec: ', msg
         msg = "serStatus: "+str(serStatus)
-        time.sleep(1)
+        #time.sleep(1)
 
         try:
             clientsocket.send(msg)
@@ -61,7 +61,7 @@ def serialServer():
                             port="/dev/rfcomm0",
                             baudrate=9600,
                             timeout=1.5)
-            time.sleep(5)
+            time.sleep(1)
             print "Port isOpen: "+str(ser.isOpen())
             # Now port is opened but inactive
             serStatus = 1
