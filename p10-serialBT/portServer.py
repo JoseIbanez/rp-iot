@@ -64,7 +64,7 @@ def serialServer():
             lastCmd = 0
 
         elif serStatus == 1:
-            time.sleep(1)
+            time.sleep(2)
 
         elif len(cmdList) == 0:
             with cv:
@@ -73,7 +73,7 @@ def serialServer():
         #Port was closed
         if serStatus == 0:
             ser = serial.Serial(
-                            port="/dev/rfcomm0",
+                            port="/dev/rfcomm2",
                             baudrate=9600,
                             timeout=1.5)
             time.sleep(1)
