@@ -8,10 +8,13 @@ import threading
 import logging
 
 
-cv = threading.Condition()
+class SerialDevice:
 
-cmdList = []
-serStatus = 0
+    def __init__(self, port):
+        self.cv = threading.Condition()
+        self.cmdList = []
+        self.port = port
+
 
 logging.basicConfig(level=logging.DEBUG,
                     format='(%(threadName)-9s) %(message)s',)
@@ -42,49 +45,65 @@ def on_new_client(clientsocket,addr):
 
 
 
-def serialServer():
+def serialServer(id,x):
 
+    serStatus = 0
     lastAnswer = 10
     lastCmd = 0
     timeToSleep = 30
-    serStatus = 0
 
     while True:
 
+        cmdAvailable = len(sd[id].cmdList)
+
         #Message timeout
-        if lastCmd > timeToSleep and len(cmdList) == 0:
-            #print "z"
-            with cv:
-                cv.wait(10)
-            #time.sleep(2)
+        if lastCmd > timeToSleep and cmdAvailable == 0:
+            with sd[id].cv:
+                sd[id].cv.wait(10)
             continue
 
-        elif lastCmd > timeToSleep and len(cmdList) > 0:
+        elif lastCmd > timeToSleep and cmdAvailable > 0:
             logging.debug("New command. Wakeup")
             lastCmd = 0
 
-        elif serStatus == 1:
-            time.sleep(1)
-
-        elif len(cmdList) == 0:
-            with cv:
-                cv.wait(1)
+        elif cmdAvailable == 0:
+            with sd[id].cv:
+                sd[id].cv.wait(1)
 
         #Port was closed
         if serStatus == 0:
-            ser = serial.Serial(
-                            port="/dev/rfcomm0",
+            try:
+                ser = serial.Serial(
+                            port=sd[id].port,
                             baudrate=9600,
                             timeout=1.5)
-            time.sleep(1)
-            logging.debug("Port isOpen: "+str(ser.isOpen()))
-            # Now port is opened but inactive
-            serStatus = 1
+                logging.debug("Port isOpen: "+str(ser.isOpen()))
+                # Now port is opened but inactive
+                serStatus = 1
+                time.sleep(1)
+
+
+            except Exception as e:
+                logging.error(e)
+                ser = None
+                serStatus = 0
+                time.sleep(5)
+                continue
+
+
+        #Check connection status
+        if serStatus == 1:
+            logging.debug(">>STATUS")
+            try:
+            	ser.write("STATUS")
+            except Exception as e:
+                logging.error(e)
 
         #Try to read a message
         try:
             ans = ser.readline()
-        except:
+        except Exception as e:
+            logging.error(e)
             ans = ""
 
         if len(ans)>0:
@@ -92,18 +111,26 @@ def serialServer():
             lastAnswer = 0
             serStatus = 2
 
-        #time.sleep(1)
+        elif serStatus == 1:
+            time.sleep(5)
+
         lastAnswer = lastAnswer + 1
         lastCmd  = lastCmd + 1
-        #print "."
 
+        # Much time without answers
+        if lastAnswer > 10:
+            serStatus = 1
 
         # Much time without answers
         if lastAnswer > 20:
             serStatus = 0
             lastAnswer = 0
-            ser.close()
             logging.debug("Reset port")
+            try:
+                ser.close()
+            except Exception as e:
+                logging.error(e)
+
             time.sleep(5)
             continue
 
@@ -111,24 +138,14 @@ def serialServer():
         if lastCmd > timeToSleep:
             serStatus = 0
             ser.close()
-            logging.debug("No commands, to sleep")
+            logging.debug("No commands, time to sleep")
             #time.sleep(5)
             continue
 
-        #Check connection status
-        if lastAnswer > 10:
-            serStatus = 1
-            logging.debug(">>STATUS")
-            try:
-            	ser.write("STATUS")
-            except:
-                pass
-            continue
-
         # If ok and there is any command, send it
-        if len(cmdList) > 0 and serStatus == 2:
+        if cmdAvailable > 0 and serStatus == 2:
             lastCmd = 0
-            cmd = cmdList.pop(0)
+            cmd = sd[id].cmdList.pop(0)
             logging.debug(">>"+cmd)
             ser.write(cmd)
 
@@ -144,9 +161,17 @@ except OSError:
     pass
 
 logging.debug('Server started!')
-t1 = threading.Thread(name='serialSrv', target=serialServer)
+
+sd = {}
+id = 'D1'
+sd[id] = SerialDevice("/dev/rfcomm0")
+t1 = threading.Thread(name='serialSrv'+id, target=serialServer, args=(id,1))
 t1.start()
-#thread.start_new_thread(serialServer,())
+
+id = 'D2'
+sd[id] = SerialDevice("/dev/rfcomm1")
+t2 = threading.Thread(name='serialSrv'+id, target=serialServer, args=(id,1))
+t2.start()
 
 
 logging.debug('Waiting for clients...')
@@ -157,8 +182,8 @@ s.listen(5)                 # Now wait for client connection.
 while True:
     c, addr = s.accept()     # Establish connection with client.
 
-    t2 = threading.Thread(name='socket', target=on_new_client, args=(c,addr))
-    t2.start()
+    ts = threading.Thread(name='socket', target=on_new_client, args=(c,addr))
+    ts.start()
     #thread.start_new_thread(on_new_client,(c,addr))
 
 
