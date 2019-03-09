@@ -6,7 +6,7 @@ import time
 import serial
 import threading
 import logging
-
+import re
 
 class SerialDevice:
 
@@ -27,13 +27,26 @@ def on_new_client(clientsocket,addr):
         except:
             break
 
-        if len(msg) > 0:
-            with cv:
-                cmdList.append(msg)
-                cv.notify()
+        try:
+            m = re.match("(\w+);(\w+);(\w+)", msg)
+            id = m.groups()[0]
+            t  = m.groups()[1]
+            r  = m.groups()[2]
+            logging.debug("id:"+id+", time:"+t+", relays:"+r)
+            cmd = t+";"+r
+        except Exception as e:
+            logging.error(e)
+            cmd = None
 
-        logging.debug('Addr:'+addr + ' Rec: ' + msg)
-        msg = "serStatus: "+str(serStatus)
+        logging.debug("cmd:"+str(cmd))
+        if cmd:
+            logging.debug("id:"+id)
+            with sd[id].cv:
+                sd[id].cmdList.append(cmd)
+                sd[id].cv.notify()
+
+        logging.debug("Rec: " + msg)
+        msg = "serStatus" #+str(serStatus)
         #time.sleep(1)
 
         try:
@@ -98,6 +111,7 @@ def serialServer(id,x):
             	ser.write("STATUS")
             except Exception as e:
                 logging.error(e)
+                serStatus = 3
 
         #Try to read a message
         try:
@@ -105,6 +119,17 @@ def serialServer(id,x):
         except Exception as e:
             logging.error(e)
             ans = ""
+            serStatus = 3
+
+
+        if serStatus == 3:
+            ser.close()
+            serStatus = 0
+            time.sleep(5)
+            continue
+
+
+
 
         if len(ans)>0:
             logging.debug("<<"+ans)
@@ -163,15 +188,20 @@ except OSError:
 logging.debug('Server started!')
 
 sd = {}
-id = 'D1'
+id = 'D0'
 sd[id] = SerialDevice("/dev/rfcomm0")
-t1 = threading.Thread(name='serialSrv'+id, target=serialServer, args=(id,1))
-t1.start()
+sd[id].t = threading.Thread(name='serialSrv'+id, target=serialServer, args=(id,1))
+sd[id].t.start()
+
+id = 'D1'
+sd[id] = SerialDevice("/dev/rfcomm1")
+sd[id].t = threading.Thread(name='serialSrv'+id, target=serialServer, args=(id,1))
+sd[id].t.start()
 
 id = 'D2'
-sd[id] = SerialDevice("/dev/rfcomm1")
-t2 = threading.Thread(name='serialSrv'+id, target=serialServer, args=(id,1))
-t2.start()
+sd[id] = SerialDevice("/dev/rfcomm2")
+sd[id].t = threading.Thread(name='serialSrv'+id, target=serialServer, args=(id,1))
+sd[id].t.start()
 
 
 logging.debug('Waiting for clients...')
