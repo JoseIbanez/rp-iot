@@ -44,9 +44,9 @@ def main():
     conn = create_connection(database)
     with conn:
         # add temp
-        r = ('ESP111', 'Temp', '22.1', '2015-01-01 12:12')
+        r = ('ESP111', 'Temp', '22.1', '2015-01-02 12:12')
         r_id = add_reading(conn, r)
- 
+        print r_id
 
 
 if __name__ == '__main__':
