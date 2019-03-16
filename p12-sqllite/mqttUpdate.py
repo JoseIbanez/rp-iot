@@ -1,3 +1,5 @@
+#!/usr/bin/env python 
+
 import paho.mqtt.client as mqtt #import the client1
 import time
 import datetime
@@ -18,14 +20,14 @@ def on_message(client, userdata, message):
     print("message: ",message)
     print("userdata: ",userdata)
 
-    if re.match( r'^ESP.*/Temp$', message.topic):
+    if re.match( r'^ESP.*/\w+$', message.topic):
         print("New temp")
         
         m = re.match( r'^(ESP\w+)/(\w+)$', message.topic)
         sensor    =  m.group(1)
         parameter =  m.group(2)
         value     =  str(message.payload.decode("utf-8"))
-        now       =  datetime.datetime.now().isoformat()
+        now       =  datetime.datetime.utcnow().isoformat()+"Z"
 
         r = (sensor, parameter, value, now)
         add_reading(r)
@@ -106,8 +108,8 @@ def main():
     client.publish("ESP01/humi",50)
 
     # wait
-    #while (True)
-    time.sleep(4) 
+    while (True):
+        time.sleep(4) 
 
 
     #stop the loop

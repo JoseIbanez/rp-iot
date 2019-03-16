@@ -1,0 +1,15 @@
+[Unit]
+Description=MQTT to SQL update service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=pi
+WorkingDirectory=/var/lib/balcon
+ExecStart=/usr/bin/env python /usr/local/bin/mqttUpdate.py
+
+[Install]
+WantedBy=multi-user.target
