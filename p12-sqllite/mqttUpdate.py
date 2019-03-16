@@ -73,7 +73,6 @@ def add_reading(reading):
     ret = cur.lastrowid
     print "<ok: "+ str(ret)
     sys.stdout.flush()
-
     return ret
 
 
@@ -89,7 +88,6 @@ def main():
     r = ('ESP111', 'Temp', '22.1', '2015-01-02 12:12')
     r_id = add_reading(r)
     print r_id
-
 
 
     print("creating new instance")
@@ -118,7 +116,6 @@ def main():
     while (True):
         time.sleep(4) 
         sys.stdout.flush()
-
 
     #stop the loop
     client.loop_stop() 
