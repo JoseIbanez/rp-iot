@@ -6,6 +6,7 @@ import datetime
 import sqlite3
 from sqlite3 import Error
 import re
+import sys
 
 # create a database connection
 database = "./balcon.db"
@@ -22,7 +23,7 @@ def on_message(client, userdata, message):
 
     if re.match( r'^ESP.*/\w+$', message.topic):
         print("New temp")
-        
+
         m = re.match( r'^(ESP\w+)/(\w+)$', message.topic)
         sensor    =  m.group(1)
         parameter =  m.group(2)
@@ -71,6 +72,7 @@ def add_reading(reading):
 
     ret = cur.lastrowid
     print "<ok: "+ str(ret)
+    sys.stdout.flush()
     return ret
 
 
@@ -78,6 +80,9 @@ def add_reading(reading):
 
 def main():
     broker_address="127.0.0.1"
+
+    print "Starting version (v1.0.1)"
+    sys.stdout.flush()
 
 
     r = ('ESP111', 'Temp', '22.1', '2015-01-02 12:12')
@@ -110,7 +115,7 @@ def main():
     # wait
     while (True):
         time.sleep(4) 
-
+        sys.stdout.flush()
 
     #stop the loop
     client.loop_stop() 
