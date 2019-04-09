@@ -36,7 +36,7 @@ def on_message(client, userdata, message):
 
         now       =  datetime.datetime.utcnow().isoformat()+"Z"
 
-        r = (sensor, parameter, value, now)
+        r = (sensor+"."+port, parameter, value, now)
         add_reading(r)
 
     print("---")
