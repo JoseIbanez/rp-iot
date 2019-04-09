@@ -21,13 +21,19 @@ def on_message(client, userdata, message):
     print("message: ",message)
     print("userdata: ",userdata)
 
-    if re.match( r'^ESP.*/\w+$', message.topic):
+    if re.match( r'^r/ESP.*/\w+$', message.topic):
         print("New temp")
 
-        m = re.match( r'^(ESP\w+)/(\w+)$', message.topic)
+        m = re.match( r'^r/(ESP\w+)/(\w+)/(\w+)$', message.topic)
         sensor    =  m.group(1)
-        parameter =  m.group(2)
+        port      =  m.group(2)
+        parameter =  m.group(3)
+        print("sensor ", sensor)
+        print("port ", port)
+
         value     =  str(message.payload.decode("utf-8"))
+        print("value ", value)
+
         now       =  datetime.datetime.utcnow().isoformat()+"Z"
 
         r = (sensor, parameter, value, now)
@@ -81,7 +87,7 @@ def add_reading(reading):
 def main():
     broker_address="127.0.0.1"
 
-    print "Starting version (v1.0.1)"
+    print "Starting version (v1.0.2)"
     sys.stdout.flush()
 
 
@@ -103,14 +109,14 @@ def main():
     #start the loop
     client.loop_start() 
 
-    topic = "#"
+    topic = "r/#"
     print("Subscribing to topic",topic)
     client.subscribe(topic)
 
     print("Publishing message to topic",topic)
-    client.publish("ESP01/Temp",22)
+    client.publish("r/ESP01/1/Temp",22)
     time.sleep(1)
-    client.publish("ESP01/humi",50)
+    client.publish("r/ESP01/1/humi",50)
 
     # wait
     while (True):
