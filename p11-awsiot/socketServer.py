@@ -1,4 +1,4 @@
-#!/usr/bin/python           # This is server.py file
+#!/usr/bin/env python
 
 import socket               # Import socket module
 import thread
