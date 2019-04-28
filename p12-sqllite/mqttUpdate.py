@@ -24,7 +24,7 @@ def on_message(client, userdata, message):
     if re.match( r'^r/ESP.*/\w+$', message.topic):
         print("New temp")
 
-        m = re.match( r'^r/(ESP\w+)/(\w+)/(\w+)$', message.topic)
+        m = re.match( r'^r/(ESP\w+)\.(\w+)/(\w+)$', message.topic)
         sensor    =  m.group(1)
         port      =  m.group(2)
         parameter =  m.group(3)
@@ -114,9 +114,9 @@ def main():
     client.subscribe(topic)
 
     print("Publishing message to topic",topic)
-    client.publish("r/ESP01/1/Temp",22)
+    client.publish("r/ESP00001.A0/Temp",22)
     time.sleep(1)
-    client.publish("r/ESP01/1/humi",50)
+    client.publish("r/ESP00001.A1/humi",50)
 
     # wait
     while (True):
