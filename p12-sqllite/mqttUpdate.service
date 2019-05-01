@@ -6,8 +6,9 @@ StartLimitIntervalSec=0
 [Service]
 Type=simple
 Restart=always
-RestartSec=1
+RestartSec=5
 User=pi
+PIDFile=/var/spool/balcon/pid/master.pid
 WorkingDirectory=/var/lib/balcon
 ExecStart=/usr/bin/env python /usr/local/bin/mqttUpdate.py
 
