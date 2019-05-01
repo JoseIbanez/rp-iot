@@ -161,9 +161,9 @@ def main():
     client.subscribe(topic)
 
     print("Publishing message to topic",topic)
-    client.publish("ESP01.A0/temp",22)
+    client.publish("r/ESP00001.A0/Temp",22)
     time.sleep(1)
-    client.publish("ESP01.A1/mois",50)
+    client.publish("r/ESP00001.A1/humi",50)
 
     # wait
     while (True):
