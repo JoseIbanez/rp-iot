@@ -7,6 +7,12 @@ import sqlite3
 from sqlite3 import Error
 import re
 import sys
+import json
+import boto3
+import yaml
+
+
+
 
 # create a database connection
 database = "./balcon.db"
@@ -34,10 +40,17 @@ def on_message(client, userdata, message):
         value     =  str(message.payload.decode("utf-8"))
         print("value ", value)
 
-        now       =  datetime.datetime.utcnow().isoformat()+"Z"
 
+        #sqlite3 update
+        now =  datetime.datetime.utcnow().isoformat()+"Z"
         r = (sensor+"."+port, parameter, value, now)
         add_reading(r)
+
+
+        #aws upload 
+        awsmsg=aws_set_message(sensor+"."+port, parameter, value)
+        aws_upload(awsmsg)
+
 
     print("---")
 
@@ -83,7 +96,7 @@ def add_reading(reading):
 
 
 
-def aws_set_message(probeId,temp,humidity,mois,batt):
+def aws_set_message(probeId,param, value):
 
     #use ISO format for date
     date = datetime.datetime.utcnow().isoformat()+"Z"
@@ -92,19 +105,7 @@ def aws_set_message(probeId,temp,humidity,mois,batt):
                'probe': probeId
               }
 
-    if temp:
-        message['temp'] = temp
-
-    if humidity:
-        message['humidity'] = humidity
-
-    if mois:
-        message['mois'] = mois
-
-    if batt:
-        message['batt'] = batt
-
-
+    message[param] = value
 
     print "Message:"+json.dumps(message)
     return message
@@ -112,6 +113,8 @@ def aws_set_message(probeId,temp,humidity,mois,batt):
 
 
 def aws_upload(message):
+
+    arn = "arn:aws:sns:eu-west-1:532272748741:temp"
 
     try:
         client = boto3.client('sns')

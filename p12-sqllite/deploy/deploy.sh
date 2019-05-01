@@ -7,6 +7,9 @@ sudo apt-get install -y python-pip
 pip install paho-mqtt
 
 sudo mkdir /var/lib/balcon
-sudo chown pi /var/lib/balcon
+cp ./balcon.db /var/lib/balcon/
 
-sudo cp 
+sudo mkdir -p /var/spool/balcon/pid
+
+sudo chown $USER /var/lib/balcon
+
