@@ -21,16 +21,22 @@ def on_message(client, userdata, message):
     print("message: ",message)
     print("userdata: ",userdata)
 
-    if re.match( r'^ESP.*/\w+$', message.topic):
+    if re.match( r'^r/ESP.*/\w+$', message.topic):
         print("New temp")
 
-        m = re.match( r'^(ESP\w+)/(\w+)$', message.topic)
+        m = re.match( r'^r/(ESP\w+)\.(\w+)/(\w+)$', message.topic)
         sensor    =  m.group(1)
-        parameter =  m.group(2)
+        port      =  m.group(2)
+        parameter =  m.group(3)
+        print("sensor ", sensor)
+        print("port ", port)
+
         value     =  str(message.payload.decode("utf-8"))
+        print("value ", value)
+
         now       =  datetime.datetime.utcnow().isoformat()+"Z"
 
-        r = (sensor, parameter, value, now)
+        r = (sensor+"."+port, parameter, value, now)
         add_reading(r)
 
     print("---")
@@ -128,7 +134,7 @@ def aws_upload(message):
 def main():
     broker_address="127.0.0.1"
 
-    print "Starting version (v1.0.1)"
+    print "Starting version (v1.0.2)"
     sys.stdout.flush()
 
 
@@ -150,7 +156,7 @@ def main():
     #start the loop
     client.loop_start() 
 
-    topic = "#"
+    topic = "r/#"
     print("Subscribing to topic",topic)
     client.subscribe(topic)
 
