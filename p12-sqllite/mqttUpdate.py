@@ -7,6 +7,12 @@ import sqlite3
 from sqlite3 import Error
 import re
 import sys
+import json
+import boto3
+import yaml
+
+
+
 
 # create a database connection
 database = "./balcon.db"
@@ -24,7 +30,7 @@ def on_message(client, userdata, message):
     if re.match( r'^r/ESP.*/\w+$', message.topic):
         print("New temp")
 
-        m = re.match( r'^r/(ESP\w+)/(\w+)/(\w+)$', message.topic)
+        m = re.match( r'^r/(ESP\w+)\.(\w+)/(\w+)$', message.topic)
         sensor    =  m.group(1)
         port      =  m.group(2)
         parameter =  m.group(3)
@@ -34,10 +40,17 @@ def on_message(client, userdata, message):
         value     =  str(message.payload.decode("utf-8"))
         print("value ", value)
 
-        now       =  datetime.datetime.utcnow().isoformat()+"Z"
 
+        #sqlite3 update
+        now =  datetime.datetime.utcnow().isoformat()+"Z"
         r = (sensor+"."+port, parameter, value, now)
         add_reading(r)
+
+
+        #aws upload 
+        awsmsg=aws_set_message(sensor+"."+port, parameter, value)
+        aws_upload(awsmsg)
+
 
     print("---")
 
@@ -83,6 +96,43 @@ def add_reading(reading):
 
 
 
+def aws_set_message(probeId,param, value):
+
+    #use ISO format for date
+    date = datetime.datetime.utcnow().isoformat()+"Z"
+
+    message = {'date': date,
+               'probe': probeId
+              }
+
+    message[param] = value
+
+    print "Message:"+json.dumps(message)
+    return message
+
+
+
+def aws_upload(message):
+
+    arn = "arn:aws:sns:eu-west-1:532272748741:temp"
+
+    try:
+        client = boto3.client('sns')
+        response = client.publish(
+            TargetArn=arn,
+            Message=json.dumps({'default': json.dumps(message)}),
+            MessageStructure='json'
+        )
+        print "AWS answer"+str(response)
+
+    except Exception as e:
+        # handle any exception
+        print "AWS SNS error '{0}' occured. Arguments {1}.".format(e.message, e.args)
+
+
+
+
+
 
 def main():
     broker_address="127.0.0.1"
@@ -114,9 +164,9 @@ def main():
     client.subscribe(topic)
 
     print("Publishing message to topic",topic)
-    client.publish("r/ESP01/1/Temp",22)
+    client.publish("r/ESP00001.A0/Temp",22)
     time.sleep(1)
-    client.publish("r/ESP01/1/humi",50)
+    client.publish("r/ESP00001.A1/humi",50)
 
     # wait
     while (True):
