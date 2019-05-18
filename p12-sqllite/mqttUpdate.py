@@ -181,7 +181,7 @@ def aws_upload(message):
 def main():
     broker_address="127.0.0.1"
 
-    print "Starting version (v1.0.2)"
+    print "Starting version (v1.0.3)"
     sys.stdout.flush()
 
     add_sensor_hit("ESP000")
