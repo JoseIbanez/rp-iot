@@ -205,14 +205,14 @@ def main():
     #start the loop
     client.loop_start() 
 
-    topic = "r/#"
+    topic = [("r/#",0),("b/#",0),("a/#",0)]
     print("Subscribing to topic",topic)
     client.subscribe(topic)
 
-    print("Publishing message to topic",topic)
+    print("Publishing test messages")
     client.publish("r/ESP00001.A0/Temp",22)
     time.sleep(1)
-    client.publish("r/ESP00001.A1/humi",50)
+    client.publish("r/ESP00001.A1/mois",50)
 
     # wait
     while (True):
