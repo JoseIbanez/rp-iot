@@ -20,26 +20,39 @@ database = "./balcon.db"
 ############
 
 def on_message(client, userdata, message):
-    print("message received " ,str(message.payload.decode("utf-8")))
-    print("message topic=",message.topic)
-    print("message qos=",message.qos)
-    print("message retain flag=",message.retain)
-    print("message: ",message)
-    print("userdata: ",userdata)
+
+    print("message received " + 
+            message.topic + ":" +
+            str(message.payload.decode("utf-8")) )
+
+    #print("message received " ,str(message.payload.decode("utf-8")))
+    #print("message topic=",message.topic)
+    #print("message qos=",message.qos)
+    #print("message retain flag=",message.retain)
+    #print("message: ",message)
+    #print("userdata: ",userdata)
+
+    if re.match( r'^[rba]/ESP\w+.*$', message.topic):
+        print("New msg")
+
+        m = re.match( r'^./(ESP\w+).*$', message.topic)
+        sensor    =  m.group(1)
+        add_sensor_hit(sensor)
 
     if re.match( r'^r/ESP.*/\w+$', message.topic):
-        print("New temp")
+        #print("New reading")
 
         m = re.match( r'^r/(ESP\w+)\.(\w+)/(\w+)$', message.topic)
         sensor    =  m.group(1)
         port      =  m.group(2)
         parameter =  m.group(3)
-        print("sensor ", sensor)
-        print("port ", port)
+        #print("sensor ", sensor)
+        #print("port ", port)
 
         value     =  str(message.payload.decode("utf-8"))
-        print("value ", value)
+        #print("value ", value)
 
+        print("New reading: sensor:"+sensor+" ,port:"+port+", value:"+value)
 
         #sqlite3 update
         now =  datetime.datetime.utcnow().isoformat()+"Z"
@@ -70,6 +83,37 @@ def create_connection(db_file):
     return None
 
 
+def add_sensor_hit(sensorId):
+    """
+    Increase sensor msg counter in DDBB
+    """
+
+    #print ">add_reading"
+
+    sqlInsert = '''
+    INSERT INTO sensor_hits(sensorId, counter) 
+    SELECT ?, 0
+    WHERE NOT EXISTS(SELECT 1 FROM sensor_hits WHERE sensorId = ?);
+    '''
+
+    sqlUpdate = '''    
+    UPDATE sensor_hits
+    SET counter = counter+1
+    WHERE sensorId = ?;
+    '''
+
+    conn = create_connection(database)
+    with conn:
+        cur = conn.cursor()
+        cur.execute(sqlInsert, [sensorId, sensorId])
+        cur.execute(sqlUpdate, [sensorId])
+
+    ret = cur.lastrowid
+    print "sqlite ok. entries:"+ str(ret)
+    sys.stdout.flush()
+    return ret
+
+
 
 def add_reading(reading):
     """
@@ -90,7 +134,7 @@ def add_reading(reading):
         cur.execute(sql, reading)
 
     ret = cur.lastrowid
-    print "<ok: "+ str(ret)
+    print "sqlite ok. entries:"+ str(ret)
     sys.stdout.flush()
     return ret
 
@@ -107,7 +151,7 @@ def aws_set_message(probeId,param, value):
 
     message[param] = value
 
-    print "Message:"+json.dumps(message)
+    print "AWS message:"+json.dumps(message)
     return message
 
 
@@ -123,7 +167,7 @@ def aws_upload(message):
             Message=json.dumps({'default': json.dumps(message)}),
             MessageStructure='json'
         )
-        print "AWS answer"+str(response)
+        print "AWS answer: "+str(response['ResponseMetadata']['HTTPStatusCode'])
 
     except Exception as e:
         # handle any exception
@@ -139,6 +183,8 @@ def main():
 
     print "Starting version (v1.0.2)"
     sys.stdout.flush()
+
+    add_sensor_hit("ESP000")
 
 
     r = ('ESP111', 'Temp', '22.1', '2015-01-02 12:12')
