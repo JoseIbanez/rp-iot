@@ -104,3 +104,4 @@ ENV/
 .DS_Store
 *.db
 .vagrant/
+.vscode/

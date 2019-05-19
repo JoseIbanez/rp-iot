@@ -29,12 +29,13 @@ def on_new_client(clientsocket,addr):
             break
 
         try:
-            m = re.match("(\w+);(\w+);(\w+)", msg)
+            m = re.match(r'(\w+);(\w+);(\w+)', msg)
             id = m.groups()[0]
             t  = m.groups()[1]
             r  = m.groups()[2]
             logging.debug("id:"+id+", time:"+t+", relays:"+r)
             cmd = t+";"+r
+            
         except Exception as e:
             logging.error(e)
             cmd = None
