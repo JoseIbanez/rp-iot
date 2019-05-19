@@ -11,6 +11,7 @@ User={{USER}}
 PIDFile=/var/spool/balcon/pid/master.pid
 WorkingDirectory=/var/lib/balcon
 ExecStart=/usr/bin/env python /usr/local/bin/mqttUpdate.py
+SyslogIdentifier=mqttupdate
 
 [Install]
 WantedBy=multi-user.target
