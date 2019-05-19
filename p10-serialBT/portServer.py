@@ -200,10 +200,10 @@ sd[id] = SerialDevice("/dev/rfcomm1")
 sd[id].t = threading.Thread(name='serialSrv'+id, target=serialServer, args=(id,1))
 sd[id].t.start()
 
-id = 'D2'
-sd[id] = SerialDevice("/dev/rfcomm2")
-sd[id].t = threading.Thread(name='serialSrv'+id, target=serialServer, args=(id,1))
-sd[id].t.start()
+#id = 'D2'
+#sd[id] = SerialDevice("/dev/rfcomm2")
+#sd[id].t = threading.Thread(name='serialSrv'+id, target=serialServer, args=(id,1))
+#sd[id].t.start()
 
 
 logging.debug('Waiting for clients...')
