@@ -72,9 +72,33 @@ else:
 
 
 print "CMD: {}".format(cmd)
+
+
 s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 s.connect(args.port)
-s.send(cmd)
-data = s.recv(1024)
+bt = None
+
+for i in range(10):
+    s.send("D1;STATUS")
+    data = s.recv(1024)
+    print('Received ' + data)
+
+    if data == "serStatus2":
+        bt = 1
+        break
+
+    time.sleep(5)
+
+
+
+if bt:
+    print "BT is up"
+    s.send(cmd)
+    data = s.recv(1024)
+    print('Received ' + repr(data))
+
+else:
+    print "BT if down"
+
 s.close()
-print('Received ' + repr(data))
+
