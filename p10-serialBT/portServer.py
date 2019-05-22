@@ -29,44 +29,31 @@ def on_new_client(clientsocket,addr):
         except:
             break
 
-        logging.debug("Rec: " + msg)
-
-        id = None
-        cmd = None
-        ans = "Error"
-	t = None
-
-        m = re.match(r'^(\w+);(S\w+)', msg)
-	if (m and len(m.groups())==2):
-            id = m.groups()[0]
-            cmd = "STATUS"
-
-
-        m = re.match(r'(\w+);(\w+);(\w+)', msg)
-        if (m and len(m.groups())==3):
+        try:
+            m = re.match(r'(\w+);(\w+);(\w+)', msg)
             id = m.groups()[0]
             t  = m.groups()[1]
             r  = m.groups()[2]
             logging.debug("id:"+id+", time:"+t+", relays:"+r)
             cmd = t+";"+r
+            
+        except Exception as e:
+            logging.error(e)
+            cmd = None
 
-
-        if cmd and id:
-            logging.debug("cmd:"+str(cmd))
+        logging.debug("cmd:"+str(cmd))
+        if cmd:
             logging.debug("id:"+id)
-            ans = "serStatus" +str(sd[id].serStatus)
+            with sd[id].cv:
+                sd[id].cmdList.append(cmd)
+                sd[id].cv.notify()
 
-            if t or len(sd[id].cmdList) == 0 :
-                with sd[id].cv:
-                    sd[id].cmdList.append(cmd)
-                    sd[id].cv.notify()
-
-        logging.debug("ans: " + ans)
-
-
+        logging.debug("Rec: " + msg)
+        msg = "serStatus" #+str(serStatus)
+        #time.sleep(1)
 
         try:
-            clientsocket.send(ans)
+            clientsocket.send(msg)
         except:
             break
 

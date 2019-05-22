@@ -1,0 +1,7 @@
+actions:
+  - medium:
+      temp: 25
+      hours:  19
+  - high:
+      temp: 30
+      hours:  21

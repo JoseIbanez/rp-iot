@@ -9,6 +9,18 @@ import sys
 import socket
 import json
 
+timetable = [
+    {
+        "temp": 25,
+        "horusList": "19"
+    },
+    {
+        "temp": 30,
+        "horusList": "23,02"
+    }
+]
+
+
 #Get options
 parser = argparse.ArgumentParser(
          description='Send message to serial port')
@@ -60,6 +72,8 @@ try:
 except:
     print("error in file {}".format(args.tfile))
     maxTemp = 0
+
+
 
 
 if maxTemp >= args.temp:
