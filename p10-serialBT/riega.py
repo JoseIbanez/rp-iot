@@ -64,10 +64,11 @@ except:
 
 if maxTemp >= args.temp:
     print "Upper threshold"
-    cmd = args.msg
+    cmd = [ "D1;010;0001", "D1;0015;0001", "D1;0015;0001", "D1;0300;0001" ]
 else:
     print "Below threshold"
-    cmd = "D1;0005;0001"
+    cmd = [ "D1;010;0001", "D1;0002;0001", "D1;0002;0001", "D1;0030;0001" ]
+
 
 
 
@@ -93,9 +94,15 @@ for i in range(10):
 
 if bt:
     print "BT is up"
-    s.send(cmd)
-    data = s.recv(1024)
-    print('Received ' + repr(data))
+
+    for i, val in enumerate(cmd):
+   	print "cmd" + str(i)
+    	s.send(val)
+    	data = s.recv(1024)
+    	print('Received ' + repr(data))
+        time.sleep(30)
+
+
 
 else:
     print "BT if down"
