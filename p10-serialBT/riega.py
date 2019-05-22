@@ -92,75 +92,77 @@ def sendCommands(port, cmd):
     return
 
 
+def main():
+    #Get options
+    parser = argparse.ArgumentParser(
+            description='Send message to serial port')
 
-#Get options
-parser = argparse.ArgumentParser(
-         description='Send message to serial port')
+    parser.add_argument(
+            '-port',
+            type=str,
+            help='serial port, eg. /tmp/channel0',
+            default="/tmp/channel0")
 
-parser.add_argument(
-        '-port',
-        type=str,
-        help='serial port, eg. /tmp/channel0',
-        default="/tmp/channel0")
-
-parser.add_argument(
-        '-tfile',
-        type=str,
-        help='temperature file, eg. /var/lib/balcon/28039.json',
-        default="/var/lib/balcon/28039.json")
-
-
-parser.add_argument(
-        '-maxTemp',
-        type=int,
-        help='testing max. temp., eg. 30')
-
-parser.add_argument(
-        '-currentHour',
-        type=int,
-        help='testing current hour, eg. 17')
+    parser.add_argument(
+            '-tfile',
+            type=str,
+            help='temperature file, eg. /var/lib/balcon/28039.json',
+            default="/var/lib/balcon/28039.json")
 
 
-args = parser.parse_args()
+    parser.add_argument(
+            '-maxTemp',
+            type=int,
+            help='testing max. temp., eg. 30')
+
+    parser.add_argument(
+            '-currentHour',
+            type=int,
+            help='testing current hour, eg. 17')
 
 
-
-maxTemp = getMaxTemp(args.tfile)
-
-
-# Get current hour
-currentHour = datetime.datetime.now().hour
-print "current hour: "+str(currentHour)
-
-#Test mode
-if args.maxTemp:
-    maxTemp = args.maxTemp
-    print "Testing exec, maxTemp =" + str(maxTemp) 
-
-if args.currentHour:
-    currentHour = args.currentHour
-    print "Testing exec, currentHour =" + str(currentHour)
-
-
-#
-# Search temp and hour in timetable
-#
-cmd = None
-for i in range(len(timetable)):
-
-    if ((maxTemp >= timetable[i]['temp']) and (currentHour in timetable[i]['hours'])):
-        print "Upper for threshold "+str(timetable[i]['temp'])
-        print timetable[i]
-        cmd = timetable[i]['cmd']
-        break
+    args = parser.parse_args()
 
 
 
-if not cmd:
-    print "Below threshold"
-    cmd = [ "D1;0001;0001", "D1;0001;0001" ]
+    maxTemp = getMaxTemp(args.tfile)
 
-print "CMD: {}".format(cmd)
 
-sendCommands(args.port, cmd)
+    # Get current hour
+    currentHour = datetime.datetime.now().hour
+    print "current hour: "+str(currentHour)
 
+    #Test mode
+    if args.maxTemp:
+        maxTemp = args.maxTemp
+        print "Testing exec, maxTemp =" + str(maxTemp) 
+
+    if args.currentHour:
+        currentHour = args.currentHour
+        print "Testing exec, currentHour =" + str(currentHour)
+
+
+    #
+    # Search temp and hour in timetable
+    #
+    cmd = None
+    for i in range(len(timetable)):
+
+        if ((maxTemp >= timetable[i]['temp']) and (currentHour in timetable[i]['hours'])):
+            print "Upper for threshold "+str(timetable[i]['temp'])
+            print timetable[i]
+            cmd = timetable[i]['cmd']
+            break
+
+
+
+    if not cmd:
+        print "Below threshold"
+        cmd = [ "D1;0001;0001", "D1;0001;0001" ]
+
+    print "CMD: {}".format(cmd)
+
+    sendCommands(args.port, cmd)
+
+if __name__ == "__main__":
+    main()
