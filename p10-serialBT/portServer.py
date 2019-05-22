@@ -15,6 +15,7 @@ class SerialDevice:
         self.cv = threading.Condition()
         self.cmdList = []
         self.port = port
+        self.serStatus = 0
 
 
 logging.basicConfig(level=logging.DEBUG,
@@ -29,12 +30,13 @@ def on_new_client(clientsocket,addr):
             break
 
         try:
-            m = re.match("(\w+);(\w+);(\w+)", msg)
+            m = re.match(r'(\w+);(\w+);(\w+)', msg)
             id = m.groups()[0]
             t  = m.groups()[1]
             r  = m.groups()[2]
             logging.debug("id:"+id+", time:"+t+", relays:"+r)
             cmd = t+";"+r
+            
         except Exception as e:
             logging.error(e)
             cmd = None
@@ -69,6 +71,7 @@ def serialServer(id,x):
     while True:
 
         cmdAvailable = len(sd[id].cmdList)
+        sd[id].serStatus = serStatus
 
         #Message timeout
         if lastCmd > timeToSleep and cmdAvailable == 0:
@@ -199,10 +202,10 @@ sd[id] = SerialDevice("/dev/rfcomm1")
 sd[id].t = threading.Thread(name='serialSrv'+id, target=serialServer, args=(id,1))
 sd[id].t.start()
 
-id = 'D2'
-sd[id] = SerialDevice("/dev/rfcomm2")
-sd[id].t = threading.Thread(name='serialSrv'+id, target=serialServer, args=(id,1))
-sd[id].t.start()
+#id = 'D2'
+#sd[id] = SerialDevice("/dev/rfcomm2")
+#sd[id].t = threading.Thread(name='serialSrv'+id, target=serialServer, args=(id,1))
+#sd[id].t.start()
 
 
 logging.debug('Waiting for clients...')

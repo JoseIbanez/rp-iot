@@ -1,5 +1,5 @@
 [Unit]
-Description=MQTT to SQL update service
+Description=BT Port server
 After=network.target
 StartLimitIntervalSec=0
 
@@ -8,10 +8,10 @@ Type=simple
 Restart=always
 RestartSec=5
 User={{USER}}
-PIDFile=/var/spool/balcon/pid/master.pid
+PIDFile=/var/spool/balcon/pid/portserver.pid
 WorkingDirectory=/var/lib/balcon
-ExecStart=/usr/bin/env python /usr/local/bin/mqttUpdate.py
-SyslogIdentifier=mqttupdate
+ExecStart=/usr/bin/env python /usr/local/bin/portServer.py
+SyslogIdentifier=portserver
 
 [Install]
 WantedBy=multi-user.target
