@@ -104,7 +104,7 @@ def main():
 
 
     with open(args.config, 'r') as ymlfile:
-        config = yaml.load(ymlfile, Loader=yaml.BaseLoader)
+        config = yaml.load(ymlfile, Loader=yaml.SafeLoader)
         #print config
         timetable = config['timetable']
 
@@ -136,8 +136,11 @@ def main():
 
 
     cmd = None
-    print timetable
+    #print timetable
     for i in range(len(timetable)):
+
+        #print(maxTemp,timetable[i]['temp'],maxTemp >= timetable[i]['temp'])
+        #print(currentHour,timetable[i]['hours'], currentHour in timetable[i]['hours'])
 
         if ((maxTemp >= timetable[i]['temp']) and (currentHour in timetable[i]['hours'])):
             print "Upper for threshold "+str(timetable[i]['temp'])

@@ -11,3 +11,7 @@ sudo chmod 775 /etc/balcon
 sudo chown $USER /etc/balcon
 cp ../config.yml /etc/balcon/riega.yml
 
+
+# /home/pi/Projects/rp-iot/p10-serialBT/riega.py
+#
+#
