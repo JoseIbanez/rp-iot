@@ -136,6 +136,7 @@ def main():
 
 
     cmd = None
+    print timetable
     for i in range(len(timetable)):
 
         if ((maxTemp >= timetable[i]['temp']) and (currentHour in timetable[i]['hours'])):
