@@ -8,22 +8,8 @@ import argparse
 import sys
 import socket
 import json
+import yaml
 import datetime
-
-timetable = [
-    {
-        "temp": 25,
-        "hours": [19],
-        "cmd": [ "D1;010;0001", "D1;0015;0001", "D1;0015;0001", "D1;0300;0001" ]
-    },
-    {
-        "temp": 30,
-        "hours": [23, 02],
-        "cmd": [ "D1;010;0001", "D1;0015;0001", "D1;0015;0001", "D1;0300;0001" ]
-    }
-]
-
-
 
 
 #
@@ -57,7 +43,7 @@ def getMaxTemp(tfile):
 #
 def sendCommands(port, cmd):
     s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    s.connect(args.port)
+    s.connect(port)
     bt = None
 
     for i in range(10):
@@ -95,20 +81,13 @@ def sendCommands(port, cmd):
 def main():
     #Get options
     parser = argparse.ArgumentParser(
-            description='Send message to serial port')
+            description='Riega myBalcon')
 
     parser.add_argument(
-            '-port',
+            '-config',
             type=str,
-            help='serial port, eg. /tmp/channel0',
-            default="/tmp/channel0")
-
-    parser.add_argument(
-            '-tfile',
-            type=str,
-            help='temperature file, eg. /var/lib/balcon/28039.json',
-            default="/var/lib/balcon/28039.json")
-
+            help='config file',
+            default="/etc/balcon/riega.yml")
 
     parser.add_argument(
             '-maxTemp',
@@ -124,8 +103,14 @@ def main():
     args = parser.parse_args()
 
 
+    with open(args.config, 'r') as ymlfile:
+        config = yaml.load(ymlfile, Loader=yaml.BaseLoader)
+        #print config
+        timetable = config['timetable']
 
-    maxTemp = getMaxTemp(args.tfile)
+
+
+    maxTemp = getMaxTemp(config['tempFile'])
 
 
     # Get current hour
@@ -145,6 +130,11 @@ def main():
     #
     # Search temp and hour in timetable
     #
+
+
+
+
+
     cmd = None
     for i in range(len(timetable)):
 
@@ -158,11 +148,11 @@ def main():
 
     if not cmd:
         print "Below threshold"
-        cmd = [ "D1;0001;0001", "D1;0001;0001" ]
+        cmd = config['defaultCmd']
 
     print "CMD: {}".format(cmd)
 
-    sendCommands(args.port, cmd)
+    sendCommands(config['port'], cmd)
 
 if __name__ == "__main__":
     main()
