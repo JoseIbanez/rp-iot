@@ -87,19 +87,25 @@ def select_task_by_priority(conn, priority):
     for row in rows:
         print(row)
 
-def checkHits(conn,hitsTable):
+
+
+
+def checkHits(hitsTable):
 
     for sensor in hitsTable:
 
         stateCounter = 0
         newState = "UNKN"
 
-        print sensor
+        #print sensor
 
         if sensor['hits'] > 0 :
             newState = "OK"
 
         elif sensor['state'] == 'OK':
+            newState   = "PRE-ALARM"
+
+        elif sensor['state'] == 'PRE-ALARM':
             newState   = "ALARM"
 
         elif sensor['state'] == 'ALARM' and int(sensor['stateCounter']) > 1:
@@ -112,8 +118,23 @@ def checkHits(conn,hitsTable):
         else:
             newState  = "DOWN"    
 
-        print(sensor['id'],newState,stateCounter)
-        updateSensorState(conn,sensor['id'],newState,stateCounter)
+        sensor['newState']=newState
+        sensor['newStateCounter'] = stateCounter
+
+        print sensor
+
+        #updateSensorState(conn,sensor['id'],newState,stateCounter)
+    #print hitsTable
+    return hitsTable
+
+
+def updateSensorStateTable(conn,hitsTable):
+
+    for sensor in hitsTable:
+        updateSensorState(conn, sensor['id'], sensor['newState'], sensor['newStateCounter'])
+
+
+
 
 
 def updateSensorState(conn,id,newState,stateCounter):
@@ -149,7 +170,9 @@ def main():
         hitsTable = select_hits(conn) 
         #print("Min mois of last 24 hours:")
         #select_all_tasks(conn)
-        checkHits(conn,hitsTable)
+        hitsTable=checkHits(hitsTable)
+        updateSensorStateTable(conn,hitsTable)
+
         restartSensorHits(conn)
  
  
