@@ -191,10 +191,13 @@ def prepareAlarmMsg(hitsTable):
         msg= "myBalcon Alarm!\n"+msg
 
     print msg
-
+    return msg
 
 
 def twitterAlarm(text):
+
+    if not text:
+        return
 
     oauth=expanduser("~/.secrets/twitter")
 
@@ -236,7 +239,7 @@ def main():
         updateSensorStateTable(conn,hitsTable)
 
         alarmMsg = prepareAlarmMsg(hitsTable)
-        #twitterAlarm(alarmMsg)
+        twitterAlarm(alarmMsg)
 
         restartSensorHits(conn)
  
