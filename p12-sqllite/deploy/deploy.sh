@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sudo apt-get install -y lastpass-cli
 sudo apt-get install -y sqlite3
 sudo apt-get install -y python        
 sudo apt-get install -y mosquitto mosquitto-clients 
