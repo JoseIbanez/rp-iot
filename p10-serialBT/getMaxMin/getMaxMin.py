@@ -59,15 +59,15 @@ def getMaxMin(probe="b827eb.300520.c3",hours=48,param="temp"):
 
 
     print("reading last values")
-    print("From: "+initialDate.strftime("%Y-%m-%d %H:%M"))
-    print("To:   "+lastDate.strftime("%Y-%m-%d %H:%M"))
+    print("From: "+initialDate.strftime("%Y-%m-%dT%H:%MZ"))
+    print("To:   "+lastDate.strftime("%Y-%m-%dT%H:%MZ"))
 
     response = table.query(
         ProjectionExpression="probe, #date, #temp, humidity, mois, batt",
         ExpressionAttributeNames={"#date": "date", "#temp": "temp"},
         KeyConditionExpression=Key('probe').eq(probe) &
-                               Key('date').between(initialDate.strftime("%Y-%m-%d %H:%M"),
-                                                   lastDate.strftime("%Y-%m-%d %H:%M"))
+                               Key('date').between(initialDate.strftime("%Y-%m-%dT%H:%MZ"),
+                                                   lastDate.strftime("%Y-%m-%dT%H:%MZ"))
     )
 
 

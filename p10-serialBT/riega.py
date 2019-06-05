@@ -47,7 +47,7 @@ def sendCommands(port, cmd):
     bt = None
 
     for i in range(10):
-        s.send("D1;STATUS")
+        s.send("D0;STATUS")
         data = s.recv(1024)
         print('Received ' + data)
 
