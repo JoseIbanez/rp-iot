@@ -1,0 +1,11 @@
+defaultCmd: [ "D1;0010;0001", "D0;0003;0001", "D1;0003;0001", "D1;0010;0001" ]
+alias: { "D0": "a/ESP001D0", 
+         "D1": "q/ESP001D1"}
+tempFile: "/var/lib/balcon/28039.json"
+timetable:
+  - temp: 25
+    hours:  [19]
+    cmd: [ "D1;0010;0040", "D1;0010;0040" ]
+  - temp: 30
+    hours:  [21,23]
+    cmd: [ "D1;0010;0001" ]
