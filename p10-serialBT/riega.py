@@ -30,7 +30,7 @@ def getMaxTemp(tfile):
         print("today maxTemp(real): {}".format(maxTemp))
 
     except:
-        print("error in file {}".format(args.tfile))
+        print("error in file {}".format(tfile))
         maxTemp = 0
 
 
