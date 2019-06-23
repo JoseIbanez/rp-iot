@@ -41,9 +41,9 @@ def getMaxTemp(tfile):
 #
 # Send commands
 #
-def sendCommands(alias, cmd):
+def sendCommands(alias, broker, cmd):
 
-    myClient = mqttClient.MqttClient(alias, broker="127.0.0.1")
+    myClient = mqttClient.MqttClient(alias,broker=broker)
 
     for i, val in enumerate(cmd):
         print "cmd" + str(i)+ ": "+val
@@ -142,7 +142,7 @@ def main():
 
     print "CMD: {}".format(cmd)
 
-    sendCommands(config['alias'], cmd)
+    sendCommands(config['alias'], config['broker'], cmd)
 
 if __name__ == "__main__":
     main()

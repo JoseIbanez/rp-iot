@@ -22,7 +22,8 @@ def wait_ok(client, userdata, message):
         thingId = match.group(1)
         value =  str(message.payload.decode("utf-8"))
         print("thingId:"+thingId+", answer:"+value)
-        userdata[thingId]['answer']=value
+        userdata.thinkList[thingId]['answer']=value
+
 
     print("---")
 
