@@ -10,7 +10,7 @@ import json
 import yaml
 import datetime
 import re
-
+import mqttClient
 
 #
 # getMaxTemp function
@@ -43,6 +43,8 @@ def getMaxTemp(tfile):
 #
 def sendCommands(alias, cmd):
 
+    myClient = mqttClient.MqttClient(broker="127.0.0.1")
+
     for i, val in enumerate(cmd):
         print "cmd" + str(i)+ ": "+val
 
@@ -54,7 +56,8 @@ def sendCommands(alias, cmd):
             print "command error"
             continue;
         
-        print "topic: "+alias[topicA]+", msg:"+msg
+        print "topic: "+alias[topicA]+", msg:"+msg    
+        myClient.send_order(alias[topicA],msg)
 
         time.sleep(1)
 
