@@ -24,6 +24,8 @@ def main():
     myClient.send_raw("a/ESP001D0","ok")
     myClient.send_raw("a/ESP001D1","ok")
 
+    myClient.send_order("ESP001D1","0000;0000")
+
 
     time.sleep(10)
 
