@@ -5,13 +5,16 @@ privateKeyPath: "~/.secrets/iot/private.pem.key"
 thingName: "v01"
 clientId: "v01"
 actions:
-  - camara:
-      type:   "bash"
-      on:     "touch /tmp/camara.tmp"
-      off:    "rm /tmp/camara.tmp"
-  - foco:
-      type:   "socket"
-      socket: "/tmp/channel0"
-      on:     "10;1111"
-      off:    "0;0000"
+  camara:
+    type:      "bash"
+    "on":      "touch /tmp/camara.tmp"
+    "off":     "rm /tmp/camara.tmp"
+    "autoOff": false
+  foco:
+    type:      "socket"
+    socket:    "/tmp/channel0"
+    "on":      "D0;10;1111"
+    "off":     "D0;0;0000"
+    "autoOff": true
   
+    
