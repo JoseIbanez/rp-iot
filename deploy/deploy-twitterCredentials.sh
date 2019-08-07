@@ -2,7 +2,7 @@
 
 sudo apt-get install -y lastpass-cli
 mkdir -p ~/.config/lpass
-mkdir -p /home/pi/.local/share/lpass
+mkdir -p ~/.local/share/lpass
 
 
 echo "Note: first, lpass login [username]"
