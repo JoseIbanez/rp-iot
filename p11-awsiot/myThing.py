@@ -100,7 +100,8 @@ def controlerMapping(reqState):
 
     for key in reqState:
 
-        #print str(config['actions'])
+        print "config: "+str(config['actions'])
+        print "key: "+key
         action = config['actions'].get(key)
         print str(action)
 
