@@ -1,0 +1,17 @@
+[Unit]
+Description=my AWS Thing
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User={{USER}}
+PIDFile=/var/spool/mything/pid/myThing.pid
+WorkingDirectory=/var/lib/mything
+ExecStart=/usr/bin/env python /usr/local/bin/myThing.py
+SyslogIdentifier=myThing
+
+[Install]
+WantedBy=multi-user.target

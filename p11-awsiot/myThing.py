@@ -100,8 +100,8 @@ def controlerMapping(reqState):
 
     for key in reqState:
 
-        print "config: "+str(config['actions'])
-        print "key: "+key
+        #print "config: "+str(config['actions'])
+        #print "key: "+key
         action = config['actions'].get(key)
         print str(action)
 
@@ -140,7 +140,7 @@ def controlerMapping(reqState):
                 s.connect(sPath)
                 s.send(cmd)
                 data = s.recv(1024)
-                print("socket data: "+data)
+                print "socket data: "+data
                 retState[key] = reqState[key]
             except Exception as e:
                 print "socket error "+str(e)
@@ -150,7 +150,7 @@ def controlerMapping(reqState):
             except:
                 pass
 
-
+    print retState
     return retState
 
 
@@ -160,7 +160,11 @@ def controlerMapping(reqState):
 
 
 # Read in config-file parameters
-configFile = "~/.secrets/iot/iot-config.yml"
+#configFile = "~/.secrets/iot/iot-config.yml"
+configFile = "/etc/mything/iot-config.yml"
+
+print "config file: "+configFile
+
 try:
     with open(expanduser(configFile), 'r') as stream:
         config = yaml.load(stream)
@@ -173,6 +177,7 @@ certificatePath = expanduser(config.get('certificatePath'))
 privateKeyPath = expanduser(config.get('privateKeyPath'))
 thingName = config.get('thingName')
 clientId = config.get('clientId')
+print "clientId: "+clientId
 port = 8883
 
 
