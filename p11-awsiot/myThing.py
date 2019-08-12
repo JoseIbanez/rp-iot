@@ -182,7 +182,7 @@ def mqttCmd(action, cmd):
 
     config = globalConfig
     alias = config['mqttLocal']['thingAlias']
-    print "thingAlias: "+str(alias)    
+    print "thingAlias: "+str(alias)
 
     #broker = action.get('socket')
     broker = config['mqttLocal']['broker']
@@ -198,7 +198,7 @@ def mqttCmd(action, cmd):
 
         print "Thing: "+alias[topicA]
 
-        if not myClient: 
+        if not myClient:
             myClient = mqttClient.MqttClient(alias,broker=broker)
         ans = myClient.send_order(alias[topicA],msg)
         return ans
@@ -280,7 +280,7 @@ def main():
             '-config',
             type=str,
             help='config file',
-            default="./iot-config.yml")
+            default="/etc/mything/iot-config.yml")
 
     parser.add_argument(
             '-maxTemp',
@@ -302,7 +302,7 @@ def main():
         globalConfig = config
 
 
-    test_mqttCmd()
+    #test_mqttCmd()
 
     awsSubscribe()
 
