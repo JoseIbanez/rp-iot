@@ -48,13 +48,13 @@ def sendCommands(alias, broker, cmd):
     for i, val in enumerate(cmd):
         print "cmd" + str(i)+ ": "+val
 
-        match = re.search("(\w+);(\w+);(\w+)",val)
+        match = re.search(r"(\w+);(\w+);(\w+)",val)
         if match:
             topicA = match.group(1)
             msg = match.group(2)+";"+match.group(3)
         else:
             print "command error"
-            continue;
+            continue
         
         print "Thing: "+alias[topicA] 
         myClient.send_order(alias[topicA],msg)
