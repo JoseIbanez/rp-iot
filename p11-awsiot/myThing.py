@@ -27,6 +27,13 @@ import socket
 #import thread
 import sys
 import subprocess
+import argparse
+import re
+import mqttClient
+
+globalConfig = {}
+deviceShadowHandler = None
+myClient = None
 
 # Custom Shadow callback
 def customShadowCallback_Delta(payload, responseStatus, token):
@@ -75,6 +82,7 @@ def customShadowCallback_Delta(payload, responseStatus, token):
 def autoOff(reqState):
 
     retState = {}
+    config = globalConfig
 
     for key in reqState:
 
@@ -97,6 +105,7 @@ def autoOff(reqState):
 def controlerMapping(reqState):
 
     retState = {}
+    config = globalConfig
 
     for key in reqState:
 
@@ -150,65 +159,158 @@ def controlerMapping(reqState):
             except:
                 pass
 
+        ###########################################
+        if cmdType == "mqtt":
+
+            ans = mqttCmd(action, cmd)
+
+            if ans:
+                retState[key] = reqState[key]
+
+
+
+
     print retState
     return retState
 
+#
+# mqtt CMD handle
+#
+def mqttCmd(action, cmd):
+
+    global myClient
+
+    config = globalConfig
+    alias = config['mqttLocal']['thingAlias']
+    print "thingAlias: "+str(alias)    
+
+    #broker = action.get('socket')
+    broker = config['mqttLocal']['broker']
+    print broker + " > " + cmd
+    try:
+
+        match = re.search(r"(\w+);(\w+);(\w+)",cmd)
+        if match:
+            topicA = match.group(1)
+            msg = match.group(2)+";"+match.group(3)
+        else:
+            print "command error"
+
+        print "Thing: "+alias[topicA]
+
+        if not myClient: 
+            myClient = mqttClient.MqttClient(alias,broker=broker)
+        ans = myClient.send_order(alias[topicA],msg)
+        return ans
+
+    except Exception as e:
+        print "mqtt error "+str(e)
+        return None
+
+#
+# Test mqtt cmd
+#
+def test_mqttCmd():
+
+    key = "spray"
+    state = "on"
+
+    config = globalConfig
+    action = config['actions'].get(key)
+    cmd    = action.get(state)
+
+    mqttCmd(action, cmd)
 
 
 
+def awsSubscribe():
+
+    config = globalConfig['aws']
+    global deviceShadowHandler
+
+    host = config.get('host')
+    rootCAPath = expanduser(config.get('rootCAPath'))
+    certificatePath = expanduser(config.get('certificatePath'))
+    privateKeyPath = expanduser(config.get('privateKeyPath'))
+    thingName = config.get('thingName')
+    clientId = config.get('clientId')
+    print "clientId: "+clientId
+    port = 8883
+
+
+    # Configure logging
+    logger = logging.getLogger("AWSIoTPythonSDK.core")
+    #logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
+    streamHandler = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    streamHandler.setFormatter(formatter)
+    logger.addHandler(streamHandler)
+
+    # Init AWSIoTMQTTShadowClient
+    myAWSIoTMQTTShadowClient = AWSIoTMQTTShadowClient(clientId)
+    myAWSIoTMQTTShadowClient.configureEndpoint(host, port)
+    myAWSIoTMQTTShadowClient.configureCredentials(rootCAPath, privateKeyPath, certificatePath)
+
+    # AWSIoTMQTTShadowClient configuration
+    myAWSIoTMQTTShadowClient.configureAutoReconnectBackoffTime(1, 32, 20)
+    myAWSIoTMQTTShadowClient.configureConnectDisconnectTimeout(10)  # 10 sec
+    myAWSIoTMQTTShadowClient.configureMQTTOperationTimeout(5)  # 5 sec
+
+    # Connect to AWS IoT
+    myAWSIoTMQTTShadowClient.connect()
+
+    # Create a deviceShadow with persistent subscription
+    deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName(thingName, True)
+
+    # Listen on deltas
+    deviceShadowHandler.shadowRegisterDeltaCallback(customShadowCallback_Delta)
 
 
 
-# Read in config-file parameters
-#configFile = "~/.secrets/iot/iot-config.yml"
-configFile = "/etc/mything/iot-config.yml"
+def main():
+    #Get options
 
-print "config file: "+configFile
+    global globalConfig
 
-try:
-    with open(expanduser(configFile), 'r') as stream:
-        config = yaml.load(stream)
-except yaml.YAMLError as exc:
-        print exc
+    parser = argparse.ArgumentParser(
+            description='myThing: my AWS Thing')
 
-host = config.get('host')
-rootCAPath = expanduser(config.get('rootCAPath'))
-certificatePath = expanduser(config.get('certificatePath'))
-privateKeyPath = expanduser(config.get('privateKeyPath'))
-thingName = config.get('thingName')
-clientId = config.get('clientId')
-print "clientId: "+clientId
-port = 8883
+    parser.add_argument(
+            '-config',
+            type=str,
+            help='config file',
+            default="./iot-config.yml")
 
+    parser.add_argument(
+            '-maxTemp',
+            type=int,
+            help='testing max. temp., eg. 30')
 
-# Configure logging
-logger = logging.getLogger("AWSIoTPythonSDK.core")
-logger.setLevel(logging.DEBUG)
-streamHandler = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-streamHandler.setFormatter(formatter)
-logger.addHandler(streamHandler)
-
-# Init AWSIoTMQTTShadowClient
-myAWSIoTMQTTShadowClient = AWSIoTMQTTShadowClient(clientId)
-myAWSIoTMQTTShadowClient.configureEndpoint(host, port)
-myAWSIoTMQTTShadowClient.configureCredentials(rootCAPath, privateKeyPath, certificatePath)
-
-# AWSIoTMQTTShadowClient configuration
-myAWSIoTMQTTShadowClient.configureAutoReconnectBackoffTime(1, 32, 20)
-myAWSIoTMQTTShadowClient.configureConnectDisconnectTimeout(10)  # 10 sec
-myAWSIoTMQTTShadowClient.configureMQTTOperationTimeout(5)  # 5 sec
-
-# Connect to AWS IoT
-myAWSIoTMQTTShadowClient.connect()
-
-# Create a deviceShadow with persistent subscription
-deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName(thingName, True)
-
-# Listen on deltas
-deviceShadowHandler.shadowRegisterDeltaCallback(customShadowCallback_Delta)
+    parser.add_argument(
+            '-currentHour',
+            type=int,
+            help='testing current hour, eg. 17')
 
 
-# Loop forever
-while True:
-    time.sleep(1)
+    args = parser.parse_args()
+
+
+    with open(args.config, 'r') as ymlfile:
+        print "Config File: "+args.config
+        config = yaml.load(ymlfile, Loader=yaml.SafeLoader)
+        globalConfig = config
+
+
+    test_mqttCmd()
+
+    awsSubscribe()
+
+    # Loop forever
+    while True:
+        time.sleep(1)
+
+
+
+if __name__ == "__main__":
+    main()

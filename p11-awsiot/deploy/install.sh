@@ -7,6 +7,8 @@
 sudo apt-get install python-pip
 
 pip install awscli AWSIoTPythonSDK
+pip install paho-mqtt
+
 mkdir -p ~/.secrets/iot
 wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -P ~/.secrets/iot/
 wget https://www.amazontrust.com/repository/AmazonRootCA2.pem -P ~/.secrets/iot/

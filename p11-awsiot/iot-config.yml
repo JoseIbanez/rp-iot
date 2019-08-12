@@ -1,9 +1,16 @@
-host: "xxxxxxxxxx-ats.iot.eu-west-1.amazonaws.com"
-rootCAPath: "/etc/mything/AmazonRootCA1.pem"
-certificatePath: "/etc/mything/certificate.pem.crt"
-privateKeyPath: "/etc/mything/private.pem.key"
-thingName: "v01"
-clientId: "v01"
+aws:
+  host: "xxxxxx-ats.iot.eu-west-1.amazonaws.com"
+  rootCAPath: "/etc/mything/AmazonRootCA1.pem"
+  certificatePath: "/etc/mything/certificate.pem.crt"
+  privateKeyPath: "/etc/mything/private.pem.key"
+  thingName: "v03"
+  clientId: "v03"
+mqttLocal:
+  broker-bck: "127.0.0.1"
+  broker: "192.168.1.19"
+  thingAlias: { "T0": "ESP3C71BF4D0BB8", 
+                "T1": "ESP001D1",
+                "T2": "ESP30AEA4283B74" }
 actions:
   camara:
     type:      "bash"
@@ -15,5 +22,14 @@ actions:
     socket:    "/tmp/channel0"
     "on":      "D0;10;1111"
     "off":     "D0;0;0000"
+    "autoOff": true  
+  spray:
+    type:      "mqtt"
+    "on":      "T2;0010;0001"
+    "off":     "T2;0000;0000"
     "autoOff": true
-  
+  led1:
+    type:      "mqtt"
+    "on":      "T2;0020;0001"
+    "off":     "T2;0000;0000"
+    "autoOff": true
