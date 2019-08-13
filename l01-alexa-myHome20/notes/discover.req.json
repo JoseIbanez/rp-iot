@@ -1,0 +1,16 @@
+{
+    "directive": {
+        "header": {
+            "payloadVersion": "3",
+            "namespace": "Alexa.Discovery",
+            "name": "Discover",
+            "messageId": "1c0fa00c-458e-4e91-abc2-0b7ae5f12903"
+        },
+        "payload": {
+            "scope": {
+                "token": "Atza|IwEBIPZtNNeYV83VFkxyj-1qSmBd18QG4SLlid78-HMg6s8em9J22ErzOZtnxav2eZeMDkoC-sFirtqyNUpRI95MZQrL3lGq-6eKij9CF7TBKLb2J8DryLizGSYNmoF8QIwgsyAXpcMg-3Msk9b7A2z1x9MOIQUPRdx7uSDuwdDZncXjkIbwXOYKk_aTVeUFa6jLkJ-hjN_YEMO2fakD336KK506Dfh6jld7l3WCqxFWsTHUzmZdToe39DwNSzdKve2MK2XhhX-ybavtAms9fyYRve-j2zDrKchY3BqlUx8psDK-A2aivQUyVGjNA066sRVrQ5_Kqf5rt_LgDnO5_VPG1S935wMUbMcnAU6c6E9rz-U04RtOkPWQTHMX_Xf0j3alk0odb_d134IKgkNKEUAl6uPCE7R7nmVAfAOLTpw-agKudRdMd1GzUTPm5bkdRfC1i7jfXM4Ni1KxX9swptrNk0VdzF1k9OyFksKQsapesl3GHSf8mMz9S3XveCQETqxAeV9x5N83_e7oPih2DtfTUMSVVuMEor--cKHFfz--6kLiUppPd6Znl2O2poP6kg8BrDY",
+                "type": "BearerToken"
+            }
+        }
+    }
+}

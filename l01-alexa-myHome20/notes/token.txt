@@ -1,0 +1,8 @@
+
+
+#Get info from scope BearerToken
+curl -k https://api.amazon.com/user/profile?access_token=Atza|IwEBINS3...
+
+
+
+

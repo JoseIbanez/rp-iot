@@ -186,8 +186,6 @@ def handle_discovery(request):
         "capabilities": switchCapabilities
     }
 
-
-
     sw4 = {
         "endpointId": "rp3_001_002",
         "manufacturerName": "Raspberry",
@@ -285,14 +283,11 @@ def handle_control(request, context):
                     "correlationToken": request["directive"]["header"]["correlationToken"]
                 },
                 "endpoint": {
-                    "scope": {
-                        "type": "BearerToken",
-                        "token": "access-token-from-Amazon"
-                    },
+                    "scope": request["directive"]["endpoint"]["scope"],
                     "endpointId": request["directive"]["endpoint"]["endpointId"]
                 },
                 "payload": {}
             }
         }
         return response
-    
+
