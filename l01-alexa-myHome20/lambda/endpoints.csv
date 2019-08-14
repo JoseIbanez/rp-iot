@@ -1,0 +1,5 @@
+endpointId,manufacturerName,friendlyName,description,displayCategories,thingId,property
+rp3_001_001,Raspberry,Riego,Mi riego del balcon del salon,SWITCH,rp3-001,riego
+rp3_001_002,Raspberry,Foco planta,Foco para hacer timelapse a planta,SWITCH,rp3-001,foco
+rp3_001_003,Raspberry,Balcon,Leds del balcon del salon,SWITCH,rp3-001,balcon
+rp3_001_004,Raspberry,Humificador,Humificador del balcon del salon,SWITCH,rp3-001,spray

@@ -1,11 +1,6 @@
 
-myCsv = '''
-endpointId,manufacturerName,friendlyName,description,displayCategories,thingId,property
-rp3_001_001,Raspberry,Riego,Mi riego del balcon del salon,SWITCH,rp3-001,riego
-rp3_001_002,Raspberry,Foco planta,Foco para hacer timelapse a planta,SWITCH,rp3-001,foco
-rp3_001_003,Raspberry,Balcon,Leds del balcon del salon,SWITCH,rp3-001,balcon
-rp3_001_004,Raspberry,Humificador,Humificador del balcon del salon,SWITCH,rp3-001,spray
-'''
+import csv
+
 
 
 def handle_discovery(request):
@@ -29,23 +24,35 @@ def handle_discovery(request):
 
     deviceList = []
 
-    for :
+    with open('endpoints.csv') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if (line_count == 0):
+                #print(str(row))
+                line_count = 1
+                continue
 
-        sw = {
-            "endpointId": "rp3_001_004",
-            "manufacturerName": "Raspberry",
-            "friendlyName": "Humificador",
-            "description": "Humificador del balcon del salon",
-            "displayCategories": [ "SWITCH" ],
-            "cookie": {
-                "key1": "rp3-001",
-                "key2": "spray"
-            },
-            "capabilities": switchCapabilities
-        }
+            # endpointId,manufacturerName,friendlyName,description,displayCategories,thingId,property
+    
+            sw = {
+                "endpointId": row["endpointId"],
+                "manufacturerName": row["manufacturerName"],
+                "friendlyName": row["friendlyName"],
+                "description": row["description"],
+                "displayCategories": [ row["displayCategories"] ],
+                "cookie": {
+                    "key1": row["thingId"],
+                    "key2": row["property"]
+                },
+                "capabilities": switchCapabilities
+            }
 
+            deviceList.append(sw)
 
-        deviceList
+            #print(str(sw))
+
+    
 
 
     header = request['directive']['header']
@@ -56,12 +63,12 @@ def handle_discovery(request):
         "event" : { 
             "header" : header, 
             "payload" : {
-                "endpoints" : [ deviceList ]
+                "endpoints" : deviceList
             } 
         }
     }
 
-
+    return response
 
 
 
