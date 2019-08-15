@@ -3,8 +3,10 @@ import time
 import json
 import uuid
 import datetime
-
 import boto3
+
+import discover_csv
+
 
 client = boto3.client('iot-data')
 
@@ -125,121 +127,7 @@ def handle_report(request):
 
 def handle_discovery(request):
     
-    switchCapabilities = [
-        {
-            "type": "AlexaInterface",
-            "version": "3",
-            "interface": "Alexa"
-        },
-        {
-            "type": "AlexaInterface",
-            "version": "3",
-            "interface": "Alexa.PowerController",
-            "properties": {
-                "supported": [ { "name": "powerState" } ],
-                "retrievable": True
-            }
-        }
-    ]
-
-
-    header = request['directive']['header']
-    header['name'] = "Discover.Response"
-
-    sw1 = {
-        "endpointId": "h2_001_ch1",
-        "manufacturerName": "Linux",
-        "friendlyName": "Camara",
-        "description": "Mi camara de youtube",
-        "displayCategories": [ "SWITCH" ],
-        "cookie": {
-            "key1": "h02-001",
-            "key2": "camara"
-        },
-        "capabilities": switchCapabilities
-    }
-
-    sw2 = {
-        "endpointId": "h2_001_ch2",
-        "manufacturerName": "Linux",
-        "friendlyName": "Fuego",
-        "description": "Mi cosa fuego",
-        "displayCategories": [ "SWITCH" ],
-        "cookie": {
-            "key1": "h02-001",
-            "key2": "fuego"
-        },
-        "capabilities": switchCapabilities
-    }
-
-
-    sw3 = {
-        "endpointId": "rp3_001_001",
-        "manufacturerName": "Raspberry",
-        "friendlyName": "Riego",
-        "description": "Mi riego del balcon del salon",
-        "displayCategories": [ "SWITCH" ],
-        "cookie": {
-            "key1": "rp3-001",
-            "key2": "riego"
-        },
-        "capabilities": switchCapabilities
-    }
-
-    sw4 = {
-        "endpointId": "rp3_001_002",
-        "manufacturerName": "Raspberry",
-        "friendlyName": "Foco planta",
-        "description": "Foro para hacer timelapse a planta",
-        "displayCategories": [ "SWITCH" ],
-        "cookie": {
-            "key1": "rp3-001",
-            "key2": "foco"
-        },
-        "capabilities": switchCapabilities
-    }
-
-
-    sw5 = {
-        "endpointId": "rp3_001_003",
-        "manufacturerName": "Raspberry",
-        "friendlyName": "Balcon",
-        "description": "Leds del balcon del salon",
-        "displayCategories": [ "SWITCH" ],
-        "cookie": {
-            "key1": "rp3-001",
-            "key2": "balcon"
-        },
-        "capabilities": switchCapabilities
-    }
-
-
-    sw6 = {
-        "endpointId": "rp3_001_004",
-        "manufacturerName": "Raspberry",
-        "friendlyName": "Humificador",
-        "description": "Humificador del balcon del salon",
-        "displayCategories": [ "SWITCH" ],
-        "cookie": {
-            "key1": "rp3-001",
-            "key2": "spray"
-        },
-        "capabilities": switchCapabilities
-    }
-
-
-
-
-
-    response = { 
-        "event" : { 
-            "header" : header, 
-            "payload" : {
-                "endpoints" : [ sw1, sw2, sw3, sw4, sw5, sw6 ]
-            } 
-        }
-    }
-
+    response = discover_csv.handle_discovery(request)
 
     return response
  

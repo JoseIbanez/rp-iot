@@ -5,14 +5,24 @@ import sys
 import unittest
 import json
 import datetime
+import logging
 
 # Tested module commands
 #import lambda_function
 import discover_csv
 
+
+# Setup logger
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+logging.basicConfig()
+
+
+
 class Test_response(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         #Prepare message
         with open ("../notes/discover.req.json", "r") as myfile:
             data=myfile.read()
@@ -20,10 +30,9 @@ class Test_response(unittest.TestCase):
         request = json.loads(data)
         
         #Call target function
-        self.response =  discover_csv.handle_discovery(request)
+        cls.response =  discover_csv.handle_discovery(request)
 
     def test_endpoints_len(self):
-
         response = self.response
         
         #Asserts
@@ -31,7 +40,6 @@ class Test_response(unittest.TestCase):
 
 
     def test_sw1_displayCategories(self):
-
         response = self.response
             
         sw1 = response["event"]["payload"]["endpoints"][0]

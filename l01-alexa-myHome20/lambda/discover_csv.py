@@ -1,6 +1,12 @@
+#!/usr/bin/env python
+
 
 import csv
+import logging
 
+# Setup logger
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def handle_discovery(request):
@@ -23,6 +29,9 @@ def handle_discovery(request):
     ]
 
     deviceList = []
+
+    logger.info("Discover: reading csv file")
+
 
     with open('endpoints.csv') as csv_file:
         csv_reader = csv.DictReader(csv_file)
@@ -52,12 +61,13 @@ def handle_discovery(request):
 
             #print(str(sw))
 
+
+    logger.info("Discover: Number of devices "+str(len(deviceList)))
     
 
 
     header = request['directive']['header']
     header['name'] = "Discover.Response"
-    
 
     response = { 
         "event" : { 
