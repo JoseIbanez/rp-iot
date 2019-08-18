@@ -27,6 +27,7 @@ class Test_discover(unittest.TestCase):
         #print(data)
         request = json.loads(data)
         
+
         #Call target function
         cls.response =  lambda_function.handle_discovery(request)
 

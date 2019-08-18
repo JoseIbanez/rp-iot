@@ -14,7 +14,7 @@ import discover_csv
 
 # Setup logger
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 logging.basicConfig()
 
 
@@ -28,9 +28,12 @@ class Test_response(unittest.TestCase):
             data=myfile.read()
         #print(data)
         request = json.loads(data)
+
+        myHome = { "user_id": "amzn1.account.TEST"}
+
         
         #Call target function
-        cls.response =  discover_csv.handle_discovery(request)
+        cls.response =  discover_csv.handle_discovery(myHome,request)
 
     def test_endpoints_len(self):
         response = self.response

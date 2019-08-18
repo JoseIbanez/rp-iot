@@ -9,7 +9,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def handle_discovery(request):
+def handle_discovery(myHome,request):
     
     switchCapabilities = [
         {
@@ -30,17 +30,14 @@ def handle_discovery(request):
 
     deviceList = []
 
+    user_id = myHome["user_id"]
+    logger.info("Discover: user_id:"+user_id)
+
+
     logger.info("Discover: reading csv file")
-
-
     with open('endpoints.csv') as csv_file:
         csv_reader = csv.DictReader(csv_file)
-        line_count = 0
         for row in csv_reader:
-            if (line_count == 0):
-                #print(str(row))
-                line_count = 1
-                continue
 
             # endpointId,manufacturerName,friendlyName,description,displayCategories,thingId,property
     
@@ -57,7 +54,9 @@ def handle_discovery(request):
                 "capabilities": switchCapabilities
             }
 
-            deviceList.append(sw)
+            if row["user_id"] == user_id:
+                logger.debug("Discover: device:"+row["friendlyName"])
+                deviceList.append(sw)
 
             #print(str(sw))
 

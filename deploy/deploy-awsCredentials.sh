@@ -11,7 +11,7 @@ cat << 'EOF' > ~/.aws/config
 region = eu-west-1
 EOF
 
-lpass show --notes "Veclas/aws/roger1" > ~/.aws/credentials
+lpass show --notes "Veclas/aws/rogue_one" > ~/.aws/credentials
 
 chmod 600 ~/.aws/credentials
 chmod 600 ~/.aws/config

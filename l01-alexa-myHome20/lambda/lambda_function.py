@@ -6,6 +6,7 @@ import datetime
 import boto3
 
 import discover_csv
+import lambda_aux
 
 
 client = boto3.client('iot-data')
@@ -24,16 +25,20 @@ def get_uuid():
 def set_thing_state(thingName, property, state):
 
     payload = json.dumps({'state': { 'desired': { property : state } }})
-    
-    logger.info("IOT update, thingName:"+thingName+", payload:"+payload)
+    logger.info("IOT update: thingName:"+thingName+", payload:"+payload)
 
     response = client.update_thing_shadow(
         thingName = thingName, 
         payload =  payload
         )
 
-    logger.info("IOT response: " + str(response))  
-    logger.info("Body:"+response['payload'].read())
+    #logger.info("IOT response: " + str(response))  
+    bodyStr=response['payload'].read()
+    body = json.loads(bodyStr)
+    #logger.info("Body: "+bodyStr)
+    logger.info("IOT update, statusCode:"+str(response['ResponseMetadata']['HTTPStatusCode']))
+    logger.info("IOT update, state:"+str(body['state']))
+
 
 
 
@@ -44,10 +49,30 @@ def get_thing_state(thingName, property):
     streamingBody = response["payload"]
     jsonState = json.loads(streamingBody.read())
 
-    logger.info("IOT response: " + str(jsonState))  
+    #logger.debug("IOT response: " + str(jsonState)) 
+    logger.info("IOT reported: "+ str(jsonState["state"]["reported"]))
 
     ret = jsonState["state"]["reported"][property]
     return ret
+
+
+def wait_thing_state(thingName, property, desired):
+
+    waitTime=[100, 100, 500, 500, 1000, 1000, 1000]
+    for tw in waitTime:
+
+        time.sleep(tw/1000)
+        reported = get_thing_state(thingName, property)
+
+        if (desired == reported):
+            logger.info("IOT wait, property updated")
+            return "200"
+
+    logger.warn("IOT wait, no response")
+    return None
+
+
+
 
 
 
@@ -127,7 +152,9 @@ def handle_report(request):
 
 def handle_discovery(request):
     
-    response = discover_csv.handle_discovery(request)
+    user_id = lambda_aux.get_user(request["directive"]["payload"]["scope"]["token"])
+    myHome = { "user_id": user_id }
+    response = discover_csv.handle_discovery(myHome,request)
 
     return response
  
@@ -144,11 +171,16 @@ def handle_control(request, context):
 
     if request_namespace == "Alexa.PowerController":
         if request_name == "TurnOn":
-            set_thing_state(thingName,property,"on")
+            desired = "on"
             value = "ON"
         else:
-            set_thing_state(thingName,property,"off")
             value = "OFF"
+            desired = "off"
+
+        set_thing_state(thingName,property,desired)
+        if not wait_thing_state(thingName,property,desired):
+            return None
+
 
         response = {
             "context": {
