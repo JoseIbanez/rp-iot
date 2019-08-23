@@ -46,6 +46,8 @@ def customShadowCallback_Delta(payload, responseStatus, token):
     print("version: " + str(payloadDict["version"]))
     print("+++++++++++++++++++++++\n\n")
 
+    #logging.info("Payload: "+str(payload))
+
     try:
         state = payloadDict["state"]
     except:
@@ -240,12 +242,15 @@ def awsSubscribe():
 
     # Configure logging
     logger = logging.getLogger("AWSIoTPythonSDK.core")
-    #logger.setLevel(logging.DEBUG)
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
+    #logger.setLevel(logging.INFO)
     streamHandler = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     streamHandler.setFormatter(formatter)
     logger.addHandler(streamHandler)
+
+
+    logger.info("hi")
 
     # Init AWSIoTMQTTShadowClient
     myAWSIoTMQTTShadowClient = AWSIoTMQTTShadowClient(clientId)
@@ -304,7 +309,10 @@ def main():
 
     #test_mqttCmd()
 
+
+    #logging.info("before")
     awsSubscribe()
+    #logging.info("after")
 
     # Loop forever
     while True:
