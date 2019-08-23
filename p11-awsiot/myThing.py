@@ -46,7 +46,8 @@ def customShadowCallback_Delta(payload, responseStatus, token):
     print("version: " + str(payloadDict["version"]))
     print("+++++++++++++++++++++++\n\n")
 
-    #logging.info("Payload: "+str(payload))
+    logger = logging.getLogger("myThing")
+    logger.info("Incoming Delta: "+str(payloadDict["state"]))
 
     try:
         state = payloadDict["state"]
@@ -61,10 +62,11 @@ def customShadowCallback_Delta(payload, responseStatus, token):
     #Report ok
     try:
         JSONPayload = {"state":{"reported": state }}
-        print("Reporting: "+str(JSONPayload))
+        logger.info("Reporting: "+str(JSONPayload))
         deviceShadowHandler.shadowUpdate(json.dumps(JSONPayload), None, 5)
     except:
         print("report error")
+
 
 
 
@@ -181,14 +183,18 @@ def controlerMapping(reqState):
 def mqttCmd(action, cmd):
 
     global myClient
+    logger = logging.getLogger("myThing")
+
 
     config = globalConfig
     alias = config['mqttLocal']['thingAlias']
     print "thingAlias: "+str(alias)
 
+
     #broker = action.get('socket')
     broker = config['mqttLocal']['broker']
-    print broker + " > " + cmd
+
+
     try:
 
         match = re.search(r"(\w+);(\w+);(\w+)",cmd)
@@ -199,6 +205,7 @@ def mqttCmd(action, cmd):
             print "command error"
 
         print "Thing: "+alias[topicA]
+        logger.info("broker: "+broker+", thing: "+alias[topicA]+", cmd: "+msg)
 
         if not myClient:
             myClient = mqttClient.MqttClient(alias,broker=broker)
@@ -242,15 +249,12 @@ def awsSubscribe():
 
     # Configure logging
     logger = logging.getLogger("AWSIoTPythonSDK.core")
-    logger.setLevel(logging.DEBUG)
-    #logger.setLevel(logging.INFO)
+    #logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
     streamHandler = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     streamHandler.setFormatter(formatter)
     logger.addHandler(streamHandler)
-
-
-    logger.info("hi")
 
     # Init AWSIoTMQTTShadowClient
     myAWSIoTMQTTShadowClient = AWSIoTMQTTShadowClient(clientId)
@@ -277,6 +281,18 @@ def main():
     #Get options
 
     global globalConfig
+
+
+    # Configure logging
+    logger = logging.getLogger("myThing")
+    logger.setLevel(logging.DEBUG)
+    #logger.setLevel(logging.INFO)
+    streamHandler = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    streamHandler.setFormatter(formatter)
+    logger.addHandler(streamHandler)
+    logger.info("hello")
+
 
     parser = argparse.ArgumentParser(
             description='myThing: my AWS Thing')
