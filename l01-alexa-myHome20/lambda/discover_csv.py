@@ -28,6 +28,24 @@ def handle_discovery(myHome,request):
         }
     ]
 
+
+
+    powerCapabilities = [
+        {
+            "type": "AlexaInterface",
+            "interface": "Alexa.PowerLevelController",
+            "version": "3",
+            "properties": {
+                "supported": [ { "name": "powerLevel" } ],
+                "proactivelyReported": True,
+                "retrievable": True
+            }
+        }
+    ]
+
+
+
+
     deviceList = []
 
     user_id = myHome["user_id"]
@@ -41,24 +59,32 @@ def handle_discovery(myHome,request):
 
             # endpointId,manufacturerName,friendlyName,description,displayCategories,thingId,property
     
-            sw = {
+            device = {
                 "endpointId": row["endpointId"],
                 "manufacturerName": row["manufacturerName"],
                 "friendlyName": row["friendlyName"],
                 "description": row["description"],
-                "displayCategories": [ row["displayCategories"] ],
                 "cookie": {
                     "key1": row["thingId"],
                     "key2": row["property"]
-                },
-                "capabilities": switchCapabilities
+                }
             }
+
+            if row["displayCategories"] == "SWITCH":
+                device["capabilities"] = switchCapabilities
+                device["displayCategories"] = [ "SWITCH" ]
+
+
+            if row["displayCategories"] == "dimmer-SWITCH":
+                device["capabilities"] = powerCapabilities
+                device["displayCategories"] = [ "SWITCH" ]
+
 
             if row["user_id"] == user_id:
                 logger.debug("Discover: device:"+row["friendlyName"])
-                deviceList.append(sw)
+                deviceList.append(device)
 
-            #print(str(sw))
+            #print(str(device))
 
 
     logger.info("Discover: Number of devices "+str(len(deviceList)))
