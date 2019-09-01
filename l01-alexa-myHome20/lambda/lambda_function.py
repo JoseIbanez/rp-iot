@@ -168,6 +168,8 @@ def handle_control(request, context):
     thingName = request["directive"]["endpoint"]["cookie"]["key1"]
     property  = request["directive"]["endpoint"]["cookie"]["key2"]
     
+    desired = None
+    value = None
 
     if request_namespace == "Alexa.PowerController":
         if request_name == "TurnOn":
@@ -177,37 +179,45 @@ def handle_control(request, context):
             value = "OFF"
             desired = "off"
 
-        set_thing_state(thingName,property,desired)
-        if not wait_thing_state(thingName,property,desired):
-            return None
+    elif request_namespace == "Alexa.PowerLevelController":
+        if request_name == "SetPowerLevel":
+            desired = request["directive"]["payload"]["powerLevel"]
+            value = desired
+    
+    if not desired:
+        return None
+
+    set_thing_state(thingName,property,desired)
+    if not wait_thing_state(thingName,property,desired):
+        return None
 
 
-        response = {
-            "context": {
-                "properties": [
-                    {
-                        "namespace": "Alexa.PowerController",
-                        "name": "powerState",
-                        "value": value,
-                        "timeOfSample": get_utc_timestamp(),
-                        "uncertaintyInMilliseconds": 500
-                    }
-                ]
+    response = {
+        "context": {
+            "properties": [
+                {
+                    "namespace": request_namespace,
+                    "name": request_name,
+                    "value": value,
+                    "timeOfSample": get_utc_timestamp(),
+                    "uncertaintyInMilliseconds": 500
+                }
+            ]
+        },
+        "event": {
+            "header": {
+                "namespace": "Alexa",
+                "name": "Response",
+                "payloadVersion": "3",
+                "messageId": get_uuid(),
+                "correlationToken": request["directive"]["header"]["correlationToken"]
             },
-            "event": {
-                "header": {
-                    "namespace": "Alexa",
-                    "name": "Response",
-                    "payloadVersion": "3",
-                    "messageId": get_uuid(),
-                    "correlationToken": request["directive"]["header"]["correlationToken"]
-                },
-                "endpoint": {
-                    "scope": request["directive"]["endpoint"]["scope"],
-                    "endpointId": request["directive"]["endpoint"]["endpointId"]
-                },
-                "payload": {}
-            }
+            "endpoint": {
+                "scope": request["directive"]["endpoint"]["scope"],
+                "endpointId": request["directive"]["endpoint"]["endpointId"]
+            },
+            "payload": {}
         }
-        return response
+    }
+    return response
 
