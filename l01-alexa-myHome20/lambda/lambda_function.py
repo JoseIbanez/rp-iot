@@ -167,6 +167,7 @@ def handle_control(request, context):
     request_name = request["directive"]["header"]["name"]
     thingName = request["directive"]["endpoint"]["cookie"]["key1"]
     property  = request["directive"]["endpoint"]["cookie"]["key2"]
+    header = request['directive']['header']
     
     desired = None
     value = None
@@ -191,13 +192,14 @@ def handle_control(request, context):
     if not wait_thing_state(thingName,property,desired):
         return None
 
-
+    header['name'] = "Response"
+    header['namespace'] = "Alexa"
     response = {
         "context": {
             "properties": [
                 {
-                    "namespace": request_namespace,
-                    "name": request_name,
+                    "namespace": "Alexa.PowerController",
+                    "name": "powerState",
                     "value": value,
                     "timeOfSample": get_utc_timestamp(),
                     "uncertaintyInMilliseconds": 500
@@ -205,13 +207,7 @@ def handle_control(request, context):
             ]
         },
         "event": {
-            "header": {
-                "namespace": "Alexa",
-                "name": "Response",
-                "payloadVersion": "3",
-                "messageId": get_uuid(),
-                "correlationToken": request["directive"]["header"]["correlationToken"]
-            },
+            "header": header,
             "endpoint": {
                 "scope": request["directive"]["endpoint"]["scope"],
                 "endpointId": request["directive"]["endpoint"]["endpointId"]
