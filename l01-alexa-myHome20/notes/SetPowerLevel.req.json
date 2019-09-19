@@ -1,0 +1,25 @@
+{
+    "directive": {
+        "header": {
+            "payloadVersion": "3",
+            "correlationToken": "AAAAAAAAAQC+Jwh3sBsnzqZjDZgsybNLDAIAAAAAAAAKjGbD/0Fz4vjj+fj7euKuP+KZ0XpXpLUoHl2TK3cX38DPeKM8vQ9TgkEpm5X+7voWP0xYWLrnBfXzCHJkcPLWIEmrA95lqd6UVuTrQGKhuZ7e7+yitQ0VuqEptnGFoAg2ESrlBFs3Nv1SkOCTkG4JZyFUoF6FF7g9sG395pjnN/JANsWnSMxVesrXdK45c0MggVQGUbZGCwJxucZ62tuJfZ8rgmgcminEGLw1ZwuRYE6d53MMGBaPWQvfzuBCE8/yGnIg1OfAHjhVoeyIodavT34tRunBOCU3g90Kh5NVbFAHseOrdCT46c6t9dJfvGn733V7+dvP9kf42fwHj7m9vStOr/mvRxqvBxchCwQ+6lJh4DGbYjeZtNWYLHUZmBcwtssa/YVVF3kdK7AOQqoWbiWu4wi6WT1q4GA6ONPK4mV+8YyRIvEdMV2QUI8J6KUwsv8wRa23uTYoJnXkHh7THnS+UccCwJikE/1n9Ql1gfe5tkW4Cm1QymMLTPJrWSJ4+ZGgWlrVk7KrUeNdgX3+CcOQpE41PLk/JbNQgYOEo6iILrFIKiEo6nJ6SS+B8x0Zgnt2sx1I0NlHcnKgdfP4ZymVGk2MSfU7DB3bVBD6Xr1pnOtFlmIRQUPVkf76FF49v67cPUeegzI0/tbSQrEHfDU/DiuFJZ7rFyeWw5i9lVr/tJRzT8+jZTxGNQ==",
+            "namespace": "Alexa.PowerLevelController",
+            "name": "SetPowerLevel",
+            "messageId": "dcab3cd0-2dfe-4f15-8c1c-8631e13b0c01"
+        },
+        "endpoint": {
+            "scope": {
+                "token": "Atza|IwEBIH8oG7sPsacvbz4-W0Z0mtKJOOCO8sUi9f_Vp2PDesZPhJmjXKohoalanCuLUcCIahs84BL_Z8fHuZu5QFc9X9nnq1OeCLikgX9L0xGgLYP7ELF_7Rm9ARJAYhYE0H3BSobG1jGJ7b5bfFmKuvDhrS72lZZ5P5Gu1LjDVC5XgPt5nCYP2eBusy9D0MBTcWFQZY77bEAVfMgSz7RTxqb4nrxla870mzTq1o6ah34ro2BAdJUQxoMgTBH4WanGIOsx4SwdggKSqAkWm_g2PpHr__4aRHqJP-VcRP-zoRPPq0mKuqMTTeDQ9apOwuNmCC9Tk0UYEuh6M9N4vJT9ruSmAzBkDJRq8sPC0I7Omgm-IsNRoded8ViYgkiTxaJOi6bZ7lySRGKyjg3FZVGSGTkIhnfeWHRU8SvxKj5zd5KtKOwmUT0_soHVBIanbJHuNZ9KB0j69dCG3Fk6QuHbsgK4wqYrJ-T3U4rNB-S8-dswK0wptmnAWoQlzN2zPYsHiNNv0DS65Q8_5Hu0Rh99F4RBzqFu",
+                "type": "BearerToken"
+            },
+            "cookie": {
+                "key2": "Ventilador",
+                "key1": "rp3-001"
+            },
+            "endpointId": "rp3_001_104"
+        },
+        "payload": {
+            "powerLevel": 47
+        }
+    }
+}
