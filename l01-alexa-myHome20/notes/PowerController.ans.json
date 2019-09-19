@@ -1,0 +1,30 @@
+{
+    "event": {
+        "header": {
+            "payloadVersion": "3",
+            "correlationToken": "AAAAAAAAAQBJ2Hgz4ERIznIFmDUQio8WDAIAAAAAAADzd3WB7U8fBd74VNk4eEFUPSQPCSAma0Rpi1xVh5vXwd72LwHDdnIrgoGWWLf4FPVS9i2nvUjjy0l95fBS/W4inZx6F7DOm4iIf08Q6UwFEWc1WVPZjMtnc0//9IQtVhxYfk4pggDcbpjJxHwGMiTskFlDngfzy82y05E+sFoPHzCdjcTF3T9PDnrEdrHmvg6/tzsHZxnW/4pHmpGRzrkLVz4KH7VRczGgJBrPe93fT1+rSNXLQVFvq5D3Lat70mo/T5xvv0+TjhFBUu5T2epXNais6g729yfsQPfWnYBANAcv5Rh5UxE/IODZQ4+T0CVwfxGuC6wyl4NBD+CxSRhZgcycMM+TYM4tL0mSv7ws1gcDDrn3vCux/S4lq3te5fsQhmIS5jr932t4bMQ1jGoyhRfWEuuXyeUyloxI+0iXiTj9ZJmNdxhLccvv8v8I/+PZjuUIZK4jfTqLWLc/hH7kV52Qhs4Mug/kB/wQ2ZDbXEqnJqbuLtoHtvDW+3no2i7WNkXBYjvouDU33V7gs+EH64V2lm2d4LrqYdnoOpTK/0yk0zersbIyyaTikssaJLVnoVilukCh5e5YfowCvAtGsCf0RnCFkQmiZMHorPITbtHceLocKSFFlvF9whstB+WPlltos7VhC+j6hKo/F+2cNhOFGlmExpAtcUxLhulZBeNHcZPEf1Osn6+m9g==",
+            "namespace": "Alexa",
+            "name": "Response",
+            "messageId": "0b790366-b4ca-440d-83fc-839ed8403e15"
+        },
+        "endpoint": {
+            "scope": {
+                "token": "Atza|IwEBIINGQ1LMnL0_rEiRZFs8srdP9QC-1a4i5G5g5q23R6Q7_Hyljcm3OZ93Ve2C4mr7h-anpWL7VPzVSM-KXdxwTwUZ_zZ7nbk6Ra6jhafCm1kwjCTv8i_reOiCpw4HcWQQgLzvsZHRbl0U7Yrnkq_CHuUAarrT_IiDJH2v_VR-bXGbMEC6g7FKNmvtWG_gE1eWqMkvzMMlwvP5yiuGrO2EPGQGY8qHP-nFDN2iHk3Rtix2wCfXLmdAMb8zQhqRfjrjZq_XIiWhDOEMK40DBlaNJANv77NSWmJ1jvdUGXhNkiSOd51ERLPvia381RMC_uhFvSw3WazumfDyS0Di7OxjcPp1wOyWZ8Ny2t4K9Hv8Pz2M5mgDKAL_HhlpaLtDUwVL6hWMsim1zuiE7hdYnCcLEfy_EVpIj3AQs9y2zdXlGkF2U_nBXPB6sfHTlePIDc7gNDtJvFiOz_e8A9N2vKpKa714Lav0NDkFYalkO0DwSC1wUuaEjcsprsEJnitlosICeRcEIQIGd-_Qv38g9fYc9XHT",
+                "type": "BearerToken"
+            },
+            "endpointId": "rp3_001_003"
+        },
+        "payload": {}
+    },
+    "context": {
+        "properties": [
+            {
+                "timeOfSample": "2019-09-19T17:58:46.00Z",
+                "uncertaintyInMilliseconds": 500,
+                "namespace": "Alexa.PowerController",
+                "name": "powerState",
+                "value": "ON"
+            }
+        ]
+    }
+}
